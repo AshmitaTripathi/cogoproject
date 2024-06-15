@@ -4,6 +4,9 @@ from . import models, schemas
 def get_configuration(db: Session, country_code: str):
     return db.query(models.Configuration).filter(models.Configuration.country_code == country_code).first()
 
+def get_all_configurations(db: Session):
+    return db.query(models.Configuration).all()
+
 def create_configuration(db: Session, configuration: schemas.ConfigurationCreate):
     db_configuration = models.Configuration(**configuration.dict())
     db.add(db_configuration)

@@ -21,6 +21,13 @@ def get_configuration(country_code: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Configuration not found")
     return db_configuration
 
+@router.get("/get_configurations", response_model=List[schemas.Configuration])
+def get_configurations(db: Session = Depends(get_db)):
+    db_configurations = crud.get_all_configurations(db)
+    if not db_configurations:
+        raise HTTPException(status_code=404, detail="No configurations found")
+    return db_configurations
+
 @router.post("/update_configuration/{country_code}", response_model=schemas.Configuration)
 def update_configuration(country_code: str, configuration: schemas.ConfigurationUpdate, db: Session = Depends(get_db)):
     db_configuration = crud.get_configuration(db, country_code=country_code)
