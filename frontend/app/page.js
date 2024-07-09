@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Button, Accordion } from '@cogoport/components';
-import { createSearch } from '../services/api';
+import { createSearch } from './apicalls/api';
 
 export default function Home() {
   // Assuming origin and destination are state variables or props
@@ -12,6 +12,7 @@ export default function Home() {
     size: '',
     type: '',
     commodity: '',
+    count: '',
   });
 
   const handleOriginChange = (event) => {
@@ -41,6 +42,7 @@ export default function Home() {
       size: formData.size,
       type: formData.type,
       commodity: formData.commodity,
+      count: formData.count,
       // Add other parameters as needed
     };
 
@@ -167,7 +169,7 @@ export default function Home() {
         <input
           type="text"
           placeholder="Origin"
-          value={origin}
+          value={formData.origin}
           onChange={handleOriginChange}
           className="p-2 text-black text-lg border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 hover:border-gray-500"
         />
@@ -176,13 +178,13 @@ export default function Home() {
         <input
           type="text"
           placeholder="Destination"
-          value={destination}
+          value={formData.destination}
           onChange={handleDestinationChange}
           className="p-2 text-black text-lg border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 hover:border-gray-500"
         />
       </div>
       <div className="relative">
-        <Accordion title="Text Accordion" style={{ width: '250px', height: 'auto', color: 'black' }}>
+        <Accordion title="Text Accordion" style={{ width: '250px', height: 'auto', color: 'black', border: '1px solid #ccc', borderRadius: '8px', padding: '10px'  }}>
           <form className="space-y-4">
             {/* Size Section */}
             <div>
@@ -221,12 +223,20 @@ export default function Home() {
                 ))}
               </select>
             </div>
+            <div className="text-lg font-medium">Count:</div>
+            <input
+              type="number"
+              className="p-2 text-black text-lg border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 hover:border-gray-500 w-20"
+              placeholder="Enter count"
+              value={formData.count}
+            />
           </form>
         </Accordion>
       </div>
       <div>
         <button
           className="p-2 text-lg border-2 border-black rounded-md bg-red-500 text-white transition duration-300 hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onClick={handleSearch}
         >
           Search
         </button>

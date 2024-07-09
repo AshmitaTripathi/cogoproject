@@ -11,6 +11,6 @@ class SearchSystem(Base):
     size = Column(String, nullable=False)
     type = Column(String, nullable=False)
     commodity = Column(String, nullable=False)
-    count = Column(Integer, nullable=False)
+    count = Column(Integer, nullable=True)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
