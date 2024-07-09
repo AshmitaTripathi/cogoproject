@@ -1,31 +1,27 @@
+from http.client import HTTPException
 from sqlalchemy.orm import Session
 from . import models, schemas
 
-def get_configuration(db: Session, country_code: str):
-    return db.query(models.Configuration).filter(models.Configuration.country_code == country_code).first()
-
-def get_all_configurations(db: Session):
-    return db.query(models.Configuration).all()
-
-def create_configuration(db: Session, configuration: schemas.ConfigurationCreate):
-    db_configuration = models.Configuration(**configuration.dict())
-    db.add(db_configuration)
+def create_search(db: Session, search: schemas.SearchV2Create):
+    db_search = models.SearchSystem(**search.dict())
+    db.add(db_search)
     db.commit()
-    db.refresh(db_configuration)
-    return db_configuration
+    db.refresh(db_search)
+    return db_search
 
-def update_configuration(db: Session, country_code: str, configuration: schemas.ConfigurationUpdate):
-    db_configuration = db.query(models.Configuration).filter(models.Configuration.country_code == country_code).first()
-    if db_configuration:
-        for key, value in configuration.dict().items():
-            setattr(db_configuration, key, value)
-        db.commit()
-        db.refresh(db_configuration)
-    return db_configuration
+def get_search(db: Session, id: int):
+    return db.query(models.SearchSystem).filter(models.SearchSystem.id == id).first()
 
-def delete_configuration(db: Session, country_code: str):
-    db_configuration = db.query(models.Configuration).filter(models.Configuration.country_code == country_code).first()
-    if db_configuration:
-        db.delete(db_configuration)
+def get_all_searches(db: Session , skip : int , limit : int):
+    return db.query(models.SearchSystem).offset(skip).limit(limit).all()
+
+def update_search(db: Session , id : int , search: schemas.SearchV2Update):
+    db_search = db.query(models.SearchSystem).filter(models.SearchSystem.id == id).first()
+    if db_search is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    if db_search:
+        for key, value in search.dict().items():
+            setattr(db_search, key, value)
         db.commit()
-    return db_configuration
+        db.refresh(db_search)
+    return db_search
