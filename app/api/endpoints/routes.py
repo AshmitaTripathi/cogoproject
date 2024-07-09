@@ -27,7 +27,7 @@ def get_searches(db: Session = Depends(get_db) , skip : int =0 , limit : int = 1
     return db_searches
 
 
-@router.post("/update_search/{id}", response_model=schemas.SearchV2)
+@router.put("/update_search/{id}", response_model=schemas.SearchV2)
 def update_search( id: int , search: schemas.SearchV2Update, db: Session = Depends(get_db)):
    return crud.update_search(db , id , search)
     
