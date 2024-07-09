@@ -1,20 +1,25 @@
 from pydantic import BaseModel
-from typing import Optional
+from datetime import datetime
 
-class ConfigurationBase(BaseModel):
-    country_code: str
-    business_name: str
-    registration_number: Optional[str] = None
-    additional_details: Optional[str] = None
 
-class ConfigurationCreate(ConfigurationBase):
+class SearchV2Base(BaseModel):
+    origin : str
+    destination : str
+    size : str
+    type : str
+    commodity : str
+    count : int
+
+class SearchV2Create(SearchV2Base):
     pass
 
-class ConfigurationUpdate(ConfigurationBase):
+class SearchV2Update(SearchV2Base):
     pass
 
-class Configuration(ConfigurationBase):
+class SearchV2(SearchV2Base):
     id: int
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True
