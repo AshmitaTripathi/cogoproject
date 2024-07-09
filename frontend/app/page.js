@@ -1,14 +1,58 @@
 'use client'
-import { useState } from "react"; 
+import { useState } from "react";
 import Image from "next/image";
-import { Button , Accordion } from '@cogoport/components';
+import { Button, Accordion } from '@cogoport/components';
+import { createSearch } from '../services/api';
 
 export default function Home() {
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
+  // Assuming origin and destination are state variables or props
+  const [formData, setFormData] = useState({
+    origin: '',
+    destination: '',
+    size: '',
+    type: '',
+    commodity: '',
+  });
 
-  const handleOriginChange = (e) => setOrigin(e.target.value);
-  const handleDestinationChange = (e) => setDestination(e.target.value);
+  const handleOriginChange = (event) => {
+    setFormData({ ...formData, origin: event.target.value });
+  };
+
+  const handleDestinationChange = (event) => {
+    setFormData({ ...formData, destination: event.target.value });
+  };
+
+  const handleSizeChange = (event) => {
+    setFormData({ ...formData, size: event.target.value });
+  };
+
+  const handleTypeChange = (event) => {
+    setFormData({ ...formData, type: event.target.value });
+  };
+
+  const handleCommodityChange = (event) => {
+    setFormData({ ...formData, commodity: event.target.value });
+  };
+
+  const handleSearch = async () => {
+    const payload = {
+      origin: formData.origin,
+      destination: formData.destination,
+      size: formData.size,
+      type: formData.type,
+      commodity: formData.commodity,
+      // Add other parameters as needed
+    };
+
+    try {
+      const result = await createSearch(payload);
+      console.log('Search created successfully:', result);
+      // Handle success - maybe update state or show a success message
+    } catch (error) {
+      console.error('Error creating search:', error);
+      // Handle error - show error message or log it
+    }
+  };
 
   const sizeOptions = [
     { label: "20ft", value: "20" },
@@ -16,7 +60,7 @@ export default function Home() {
     { label: "40ft HC", value: "40HC" },
     { label: "45ft HC", value: "45HC" },
   ];
-  
+
   const typeOptions = [
     { value: "standard", label: "Standard (Dry)" },
     { value: "refer", label: "Refrigerated (Reefer)" },
@@ -25,7 +69,7 @@ export default function Home() {
     { value: "iso_tank", label: "ISO Tank" },
     { value: "open_side", label: "Open Side (One Door Open)" },
   ];
-  
+
   const COMMODITY_NAME_MAPPING = {
     general: { name: 'General', description: '', is_reefer: false, is_haz: false },
     hazardous: { name: 'Hazardous', description: '', is_reefer: false, is_haz: true },
@@ -69,7 +113,7 @@ export default function Home() {
     dangerous: { name: 'Dangerous', description: '', is_reefer: false, is_haz: false },
     others: { name: 'Others', description: '', is_reefer: false, is_haz: false },
   };
-  
+
   const commodityOptions = [
     "general",
     "hazardous",
@@ -152,7 +196,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-  
+
             {/* Type Section */}
             <div>
               <div className="text-lg font-medium">Type:</div>
@@ -165,7 +209,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-  
+
             {/* Commodity Section */}
             <div>
               <div className="text-lg font-medium">Commodity:</div>
