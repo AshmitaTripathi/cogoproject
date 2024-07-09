@@ -132,6 +132,7 @@ export default function Home() {
   const handleOriginChange = (event) => {
     const newOrigin = event.target.value;
     if (newOrigin === formData.destination) {
+      alert('Origin and destination cannot be the same.');
       setError('Origin and destination cannot be the same.');
     } else {
       setError('');
@@ -145,6 +146,7 @@ export default function Home() {
   const handleDestinationChange = (event) => {
     const newDestination = event.target.value;
     if (newDestination === formData.origin) {
+      alert('Origin and destination cannot be the same.');
       setError('Origin and destination cannot be the same.');
     } else {
       setError('');
@@ -185,6 +187,7 @@ export default function Home() {
     // Ensure count is not negative and is not empty
     if (parseInt(value) < 0) {
       // Handle error condition
+      alert('Count must be a non-negative number.');
       setError("Count must be a non-negative number.");
     } else {
       // Clear error if valid
@@ -194,6 +197,19 @@ export default function Home() {
   };
 
   const handleSearch = async () => {
+
+    if (
+      !formData.origin ||
+      !formData.destination ||
+      !formData.size ||
+      !formData.type ||
+      !formData.commodity ||
+      !formData.count
+    ) {
+      alert('All fields are required.');
+      console.error('Error: All fields are required.');
+      return;
+    }
     const payload = {
       origin: formData.origin,
       destination: formData.destination,
