@@ -35,6 +35,10 @@ export default function Home() {
     setFormData({ ...formData, commodity: event.target.value });
   };
 
+  const handleCountChange = (event) => {
+    setFormData({ ...formData, count: event.target.value });
+  }
+
   const handleSearch = async () => {
     const payload = {
       origin: formData.origin,
@@ -229,6 +233,7 @@ export default function Home() {
               className="p-2 text-black text-lg border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 hover:border-gray-500 w-20"
               placeholder="Enter count"
               value={formData.count}
+              onChange={handleCountChange}
             />
           </form>
         </Accordion>
