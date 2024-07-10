@@ -21,7 +21,9 @@ def get_search(id: int, db: Session = Depends(get_db)):
 
 @router.get("/get_searches", response_model=List[schemas.SearchV2])
 def get_searches(db: Session = Depends(get_db) , skip : int =0 , limit : int = 100):
+    console.log("inside get_searches")
     db_searches = crud.get_all_searches(db , skip , limit)
+    console.log(db_searches)
     if not db_searches:
         raise HTTPException(status_code=404, detail="No configurations found")
     return db_searches

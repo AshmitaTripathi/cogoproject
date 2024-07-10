@@ -16,6 +16,12 @@ export const fetchLocations = async (query) => {
     return response.data;
   };
 
+  export const getSearches = async () => {
+    console.log('getSearches api')
+    const response = await axios.get(`${API_URL}/get_searches`);
+    return response.data;
+  };
+
 export const createSearch = async (data) => {
   const response = await axios.post(`${API_URL}/create_search`, data);
   return response.data;

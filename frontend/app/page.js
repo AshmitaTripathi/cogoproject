@@ -5,6 +5,7 @@ import { Button, Accordion , Select } from '@cogoport/components';
 import { createSearch } from './apicalls/api';
 import { fetchLocations } from './apicalls/api';
 import axios from 'axios';
+import SeeSearchesButton from './components/Searches';
 
 
 const sizeOptions = [
@@ -268,7 +269,7 @@ export default function Home() {
     }
   };
   return (
-    <div className="flex items-center mt-5 space-x-4">
+    <div className="flex items-center mt-5 space-x-4 bg-white">
       <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
         <label htmlFor="origin">Origin:</label>
         <Select
@@ -384,6 +385,7 @@ export default function Home() {
           Search
         </button>
       </div>
+        <SeeSearchesButton /> 
     </div>
   );
 
