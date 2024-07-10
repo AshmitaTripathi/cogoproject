@@ -4,9 +4,16 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8000'; // Replace with your FastAPI backend URL
 
-export const fetchLocations = async () => {
-    const response = await axios.get('https://api.stage.cogoport.io/list_locations');
-    return response.data.list;
+export const fetchLocations = async (query) => {
+    const response = (await axios.get('https://api.stage.cogoport.io/list_locations',{
+        params:{
+            filters:{
+                q:query
+            }
+        }
+    }));
+    console.log(response.data)
+    return response.data;
   };
 
 export const createSearch = async (data) => {

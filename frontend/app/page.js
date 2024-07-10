@@ -1,9 +1,10 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import Image from "next/image";
-import { Button, Accordion } from '@cogoport/components';
+import { Button, Accordion , Select } from '@cogoport/components';
 import { createSearch } from './apicalls/api';
 import { fetchLocations } from './apicalls/api';
+import axios from 'axios';
 
 
 const sizeOptions = [
@@ -124,51 +125,38 @@ export default function Home() {
     count: 0,
   });
 
-  const [locations, setLocations] = useState([]);
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
   const [error, setError] = useState('');
+  const [Origoptions, setOrigOptions] = useState([]);
+  const [Destoptions, setDestOptions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleOriginChange = (event) => {
-    const newOrigin = event.target.value;
-    if (newOrigin === formData.destination) {
-      alert('Origin and destination cannot be the same.');
-      setError('Origin and destination cannot be the same.');
-    } else {
+  const handleOriginChange = (selectedOption) => {
+    const newOrigin = selectedOption ? selectedOption.value : '';
+    // if (newOrigin === formData.destination) {
+    //   alert('Origin and destination cannot be the same.');
+    //   setError('Origin and destination cannot be the same.');
+    // } else {
       setError('');
       setFormData((prevFormData) => ({
         ...prevFormData,
         origin: newOrigin,
       }));
-    }
+    // }
   };
 
-  const handleDestinationChange = (event) => {
-    const newDestination = event.target.value;
-    if (newDestination === formData.origin) {
-      alert('Origin and destination cannot be the same.');
-      setError('Origin and destination cannot be the same.');
-    } else {
+  const handleDestinationChange = (selectedOption) => {
+    const newDestination = selectedOption ? selectedOption.value : '';
+    // if (newDestination === formData.origin) {
+    //   alert('Origin and destination cannot be the same.');
+    //   setError('Origin and destination cannot be the same.');
+    // } else {
       setError('');
       setFormData((prevFormData) => ({
         ...prevFormData,
         destination: newDestination,
-      }));
-    }
+      }));  
+    // }
   };
-
-  useEffect(() => {
-    const getLocations = async () => {
-      try {
-        const data = await fetchLocations();
-        setLocations(data);
-      } catch (error) {
-        console.error('Error fetching locations:', error);
-      }
-    };
-
-    getLocations();
-  }, []);
 
   const handleSizeChange = (event) => {
     setFormData({ ...formData, size: event.target.value });
@@ -229,43 +217,91 @@ export default function Home() {
 
     }
   };
+  const fetchOriginLocations = async (query) => {
+    try {
+      console.log('Fetching locations for query:', query);
+      setIsLoading(true);
+      const data = await fetchLocations(query);
+      if('list'in data){
+      console.log(data)
+      setOrigOptions(data?.list?.map(location => ({ label: location?.name, value: location?.name })));
+    }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    } finally {
+      console.log('Finished fetching locations.');
+      setIsLoading(false);
+    }
+  };
+
+  const fetchDestinationLocations = async (query) => {
+    try {
+      console.log('Fetching locations for query:', query);
+      setIsLoading(true);
+      const data = await fetchLocations(query);
+      if('list'in data){
+      console.log(data)
+      setDestOptions(data?.list?.map(location => ({ label: location?.name, value: location?.name })));
+    }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    } finally {
+      console.log('Finished fetching locations.');
+      setIsLoading(false);
+    }
+  };
+
+  const handleOriginSearch = (inputValue) => {
+    if (inputValue) {
+      console.log('Searching for locations:', inputValue);
+      fetchOriginLocations(inputValue);
+    }else{
+      console.log('No search query provided.')
+    }
+  };
+  const handleDestinationSearch = (inputValue) => {
+    if (inputValue) {
+      console.log('Searching for Destination:', inputValue);
+      fetchDestinationLocations(inputValue);
+    }else{
+      console.log('No search query provided.')
+    }
+  };
   return (
     <div className="flex items-center mt-5 space-x-4">
       <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
         <label htmlFor="origin">Origin:</label>
-        <select
+        <Select
           id="origin"
           value={formData.origin}
           onChange={handleOriginChange}
-        >
-          <option value="">Select Origin</option>
-          {locations.map((location) => (
-            <option key={location.id} value={location.name}>
-              {location.name}
-            </option>
-          ))}
-        </select>
+          onSearch={handleOriginSearch}
+          placeholder="Select Origin"
+          options={Origoptions}
+          size="md"
+          style={{ width: '250px' }}
+          isLoading={isLoading}
+        />
       </div>
       <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
-        <label htmlFor="destination">Destination:</label>
-        <select
-          id="destination"
-          value={formData.destination}
+        <label htmlFor="origin">Destination:</label>
+        <Select
+          id="origin"
+          value={formData.destinationestination}
           onChange={handleDestinationChange}
-        >
-          <option value="">Select Destination</option>
-          {locations.map((location) => (
-            <option key={location.id} value={location.name}>
-              {location.name}
-            </option>
-          ))}
-        </select>
+          onSearch={handleDestinationSearch}
+          placeholder="Select Origin"
+          options={Destoptions}
+          size="md"
+          style={{ width: '250px' }}
+          isLoading={isLoading}
+        />
       </div>
       <div className="relative">
         <Accordion
           title="Text Accordion"
           style={{
-            width: '250px',
+            width: '100%',
             height: 'auto',
             color: 'black',
             border: '1px solid #ccc',
@@ -314,8 +350,8 @@ export default function Home() {
             <div>
               <div className="text-lg font-medium">Commodity:</div>
               <select className="p-2 text-black text-lg border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 hover:border-gray-500 w-full"
-                    value={formData.commodity}
-                    onChange={handleCommodityChange}
+                value={formData.commodity}
+                onChange={handleCommodityChange}
               >
                 {commodityOptions.map((option) => (
                   <option key={option.value} value={option.value}>
