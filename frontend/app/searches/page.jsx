@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Table } from '@cogoport/components';
-import { getSearches,updateSearch} from '../apicalls/api';
+import { getSearches,updateSearch , deleteSearch} from '../apicalls/api';
 import Modal from 'react-modal';
 import { Accordion, AccordionItem , AccordionItemTitle , AccordionItemBody} from 'react-accessible-accordion';
 // Demo styles, see 'Styles' section below for some notes on use.
@@ -142,8 +142,16 @@ export default function Searches() {
   };
 
   const handleDelete = async (id) => {
-    // Implement delete functionality
-    console.log(`Delete search with ID ${id}`);
+    try {
+      // Call the delete API function
+      const data = await deleteSearch(id);
+      // Update state to remove the deleted search from searches
+      const updatedSearches = searches.filter(search => search.id !== id);
+      setSearches(updatedSearches);
+      console.log(`Deleted search with ID ${id}`);
+    } catch (error) {
+      console.error(`Error deleting search with ID ${id}:`, error);
+    }
   };
 
   const handleSubmit = async (event) => {

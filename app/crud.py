@@ -26,3 +26,10 @@ def update_search(db: Session , id : int , search: schemas.SearchV2Update):
         db.commit()
         db.refresh(db_search)
     return db_search
+    
+def delete_search(db: Session, id: int):
+    db_search = db.query(models.SearchSystem).filter(models.SearchSystem.id == id).first()
+    if db_search:
+        db.delete(db_search)
+        db.commit()
+    return db_search

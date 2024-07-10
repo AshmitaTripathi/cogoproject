@@ -40,3 +40,12 @@ export const updateSearch = async (id, updatedSearch) => {
     throw error;
   }
 };
+
+export const deleteSearch = async (id) => {
+  try {
+    const response = await axios.delete(`${API_URL}/delete_search/${id}`);
+    return response.data; // Assuming your API returns data on successful deletion
+  } catch (error) {
+    throw error;
+  }
+};

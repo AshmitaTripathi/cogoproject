@@ -38,4 +38,12 @@ def get_searches(db: Session = Depends(get_db) , skip : int =0 , limit : int = 1
 @router.put("/update_search/{id}", response_model=schemas.SearchV2)
 def update_search( id: int , search: schemas.SearchV2Update, db: Session = Depends(get_db)):
    return crud.update_search(db , id , search)
+
+
+@router.delete("/delete_search/{id}", response_model=schemas.SearchV2)
+def delete_search(id: int, db: Session = Depends(get_db)):
+    deleted_search = crud.delete_search(db, id)
+    if not deleted_search:
+        raise HTTPException(status_code=404, detail=f"Search with id {id} not found")
+    return deleted_search
     
