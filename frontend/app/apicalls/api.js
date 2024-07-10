@@ -17,7 +17,7 @@ export const fetchLocations = async (query) => {
   };
 
   export const getSearches = async () => {
-    console.log('getSearches api')
+    console.log(' inside axios api call getSearches api')
     const response = await axios.get(`${API_URL}/get_searches`);
     return response.data;
   };
@@ -32,7 +32,11 @@ export const getSearch = async (id) => {
   return response.data;
 };
 
-export const updateSearch = async (data) => {
-  const response = await axios.post(`${API_URL}/update_search`, data);
-  return response.data;
+export const updateSearch = async (id, updatedSearch) => {
+  try {
+    const response = await axios.put(`http://localhost:8000/update_search/${id}`, updatedSearch);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };

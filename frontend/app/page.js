@@ -146,7 +146,7 @@ export default function Home() {
   };
 
   const handleDestinationChange = (selectedOption) => {
-    const newDestination = selectedOption ? selectedOption.value : '';
+    const newDestination = selectedOption ? selectedOption : '';
     // if (newDestination === formData.origin) {
     //   alert('Origin and destination cannot be the same.');
     //   setError('Origin and destination cannot be the same.');
@@ -269,7 +269,7 @@ export default function Home() {
     }
   };
   return (
-    <div className="flex items-center mt-5 space-x-4 bg-white">
+    <div className="flex flex-wrap items start mt-5 space-x-4">
       <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
         <label htmlFor="origin">Origin:</label>
         <Select
@@ -287,20 +287,21 @@ export default function Home() {
       <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
         <label htmlFor="origin">Destination:</label>
         <Select
-          id="origin"
+          id="destination"
           value={formData.destinationestination}
           onChange={handleDestinationChange}
           onSearch={handleDestinationSearch}
-          placeholder="Select Origin"
+          placeholder="Select destination"
           options={Destoptions}
           size="md"
           style={{ width: '250px' }}
           isLoading={isLoading}
         />
       </div>
-      <div className="relative">
+      <div className="relative" style={{padding: '16', width: 'fir-content',color: 'black'}}>
         <Accordion
-          title="Text Accordion"
+          title="Conatiner Details"
+          className="accordion-content"
           style={{
             width: '100%',
             height: 'auto',
@@ -308,6 +309,7 @@ export default function Home() {
             border: '1px solid #ccc',
             borderRadius: '8px',
             padding: '10px',
+            position: 'absolute',
           }}
         >
           <form className="space-y-4">
@@ -377,7 +379,7 @@ export default function Home() {
           </form>
         </Accordion>
       </div>
-      <div>
+      <div style={{padding: 16, width: 'fit-content', color: 'white' }}>
         <button
           className="p-2 text-lg border-2 border-black rounded-md bg-red-500 text-white transition duration-300 hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           onClick={handleSearch}

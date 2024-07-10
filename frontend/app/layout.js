@@ -1,5 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import '@cogoport/components/dist/themes/base.css';
+import '@cogoport/components/dist/themes/dawn.css';
 
 const inter = Inter({ subsets: ["latin"] });
 

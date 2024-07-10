@@ -14,6 +14,9 @@ class SearchV2Create(SearchV2Base):
     pass
 
 class SearchV2Update(SearchV2Base):
+    id: int
+    created_at: datetime
+    updated_at: datetime
     pass
 
 class SearchV2(SearchV2Base):
