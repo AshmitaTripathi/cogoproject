@@ -1,9 +1,9 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Table } from '@cogoport/components';
-import { getSearches,updateSearch , deleteSearch} from '../apicalls/api';
+import { getSearches, updateSearch, deleteSearch , fetchLocations } from '../apicalls/api';
 import Modal from 'react-modal';
-import { Accordion, AccordionItem , AccordionItemTitle , AccordionItemBody} from 'react-accessible-accordion';
+import { Accordion, Select } from '@cogoport/components';
 // Demo styles, see 'Styles' section below for some notes on use.
 import 'react-accessible-accordion/dist/fancy-example.css';
 
@@ -116,12 +116,16 @@ const commodityOptions = [
   label: COMMODITY_NAME_MAPPING[key]?.name || key,
 }));
 
-
 export default function Searches() {
   const [searches, setSearches] = useState([]);
   const [error, setError] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedSearch, setSelectedSearch] = useState(null);
+  const [Origoptions, setOrigOptions] = useState([]);
+  const [Destoptions, setDestOptions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [origin, setOrigin] = useState('');
+  const [destination, setDestination] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -138,31 +142,29 @@ export default function Searches() {
 
   const handleEdit = (search) => {
     setSelectedSearch(search);
-    setModalIsOpen(true);
+    setModalIsOpen(true); 
   };
 
   const handleDelete = async (id) => {
     try {
-      // Call the delete API function
-      const data = await deleteSearch(id);
-      // Update state to remove the deleted search from searches
-      const updatedSearches = searches.filter(search => search.id !== id);
-      setSearches(updatedSearches);
+      await deleteSearch(id);
+      setSearches(searches.filter(search => search.id !== id));
       console.log(`Deleted search with ID ${id}`);
     } catch (error) {
       console.error(`Error deleting search with ID ${id}:`, error);
+    }finally{
+      fetchData();
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const data = await updateSearch(selectedSearch.id, selectedSearch);
+      await updateSearch(selectedSearch.id, selectedSearch);
       setModalIsOpen(false);
-      const updatedSearches = searches.map((search) =>
+      setSearches(searches.map(search =>
         search.id === selectedSearch.id ? selectedSearch : search
-      );
-      setSearches(updatedSearches);
+      ));
     } catch (error) {
       console.error("Error updating search:", error);
     }
@@ -175,6 +177,32 @@ export default function Searches() {
     });
   };
 
+  const handleOriginChange = (selectedOption) => {
+    const newOrigin = selectedOption ? selectedOption : '';
+    if (newOrigin === selectedSearch.destination) {
+      alert('Origin and destination cannot be the same.');
+    } else {
+      setOrigin(newOrigin);
+      setSelectedSearch((prevSearch) => ({
+        ...prevSearch,
+        origin: newOrigin,
+      }));
+    }
+  };
+
+  const handleDestinationChange = (selectedOption) => {
+    const newDestination = selectedOption ? selectedOption: '';
+    if (newDestination === selectedSearch.origin) {
+      alert('Origin and destination cannot be the same.');
+    } else {
+      setDestination(newDestination);
+      setSelectedSearch((prevSearch) => ({
+        ...prevSearch,
+        destination: newDestination,
+      }));
+    }
+  };
+
   const handleCountChange = (e) => {
     const count = parseInt(e.target.value);
     if (!isNaN(count) && count >= 0) {
@@ -182,6 +210,58 @@ export default function Searches() {
         ...selectedSearch,
         count: count,
       });
+    }
+  };
+
+  const fetchOriginLocations = async (query) => {
+    try {
+      console.log('Fetching locations for query:', query);
+      setIsLoading(true);
+      const data = await fetchLocations(query);
+      if ('list' in data) {
+        console.log(data);
+        setOrigOptions(data.list.map(location => ({ label: location.name, value: location.name })));
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    } finally {
+      console.log('Finished fetching locations.');
+      setIsLoading(false);
+    }
+  };
+
+  const fetchDestinationLocations = async (query) => {
+    try {
+      console.log('Fetching locations for query:', query);
+      setIsLoading(true);
+      const data = await fetchLocations(query);
+      if ('list' in data) {
+        console.log(data);
+        setDestOptions(data.list.map(location => ({ label: location.name, value: location.name })));
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    } finally {
+      console.log('Finished fetching locations.');
+      setIsLoading(false);
+    }
+  };
+
+  const handleOriginSearch = (inputValue) => {
+    if (inputValue) {
+      console.log('Searching for locations:', inputValue);
+      fetchOriginLocations(inputValue);
+    } else {
+      console.log('No search query provided.');
+    }
+  };
+
+  const handleDestinationSearch = (inputValue) => {
+    if (inputValue) {
+      console.log('Searching for Destination:', inputValue);
+      fetchDestinationLocations(inputValue);
+    } else {
+      console.log('No search query provided.');
     }
   };
 
@@ -202,7 +282,7 @@ export default function Searches() {
         <div className='flex justify-center space-x-2'>
           <button
             className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
-            onClick={() => handleEdit(row.original, setModalIsOpen, setSelectedSearch)}
+            onClick={() => handleEdit(row.original)}
           >
             Edit
           </button>
@@ -224,95 +304,121 @@ export default function Searches() {
       <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
         <h2 className='font-bold'>Edit Search</h2>
         <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="origin" className="block text-lg font-medium">Origin:</label>
-            <input
-              id="origin"
-              type="text"
-              className="p-2 text-black text-lg border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 hover:border-gray-500 w-full"
-              value={selectedSearch?.origin || ''}
-              onChange={(e) => handleChange(e, 'origin')}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="destination" className="block text-lg font-medium">Destination:</label>
-            <input
-              id="destination"
-              type="text"
-              className="p-2 text-black text-lg border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 hover:border-gray-500 w-full"
-              value={selectedSearch?.destination || ''}
-              onChange={(e) => handleChange(e, 'destination')}
-              required
-            />
-          </div>
-          {/* <Accordion>
-            <AccordionItem>
-              <AccordionItemTitle>Size</AccordionItemTitle>
-              <AccordionItemBody>
-                {sizeOptions.map((option) => (
-                  <label key={option.value}>
-                    <input
-                      type="radio"
-                      name="size"
-                      value={option.value}
-                      checked={selectedSearch?.size === option.value}
-                      onChange={handleChange}
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </AccordionItemBody>
-            </AccordionItem>
-            <AccordionItem>
-              <AccordionItemTitle>Type</AccordionItemTitle>
-              <AccordionItemBody>
-                {typeOptions.map((option) => (
-                  <label key={option.value}>
-                    <input
-                      type="radio"
-                      name="type"
-                      value={option.value}
-                      checked={selectedSearch?.type === option.value}
-                      onChange={handleChange}
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </AccordionItemBody>
-            </AccordionItem>
-            <AccordionItem>
-              <AccordionItemTitle>Commodity</AccordionItemTitle>
-              <AccordionItemBody>
-                <select
-                  value={selectedSearch?.commodity}
-                  onChange={handleChange}
-                  name="commodity"
-                >
-                  {commodityOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
+        <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
+        <label htmlFor="origin">Origin:</label>
+        <Select
+          id="origin"
+          value={origin}
+          onChange={handleOriginChange}
+          onSearch={handleOriginSearch}
+          placeholder="Select Origin"
+          options={Origoptions}
+          size="md"
+          style={{ width: '250px' }}
+          isLoading={isLoading}
+        />
+      </div>
+      <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
+        <label htmlFor="destination">Destination:</label>
+        <Select
+          id="destination"
+          value={destination}
+          onChange={handleDestinationChange}
+          onSearch={handleDestinationSearch}
+          placeholder="Select Destination"
+          options={Destoptions}
+          size="md"
+          style={{ width: '250px' }}
+          isLoading={isLoading}
+        />
+      </div>
+          <div className="relative" style={{ padding: '16px', width: 'fit-content', color: 'black' }}>
+            <Accordion
+              title="Container Details"
+              className="accordion-content"
+              style={{
+                width: '100%',
+                height: 'auto',
+                color: 'black',
+                border: '1px solid #ccc',
+                borderRadius: '8px',
+                padding: '10px',
+              }}
+            >
+              <form className="space-y-4">
+                {/* Size Section */}
+                <div>
+                  <div className="text-lg font-medium">Size:</div>
+                  <div className="flex space-x-4">
+                    {sizeOptions.map((option) => (
+                      <label key={option.value} className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          name="size"
+                          value={option.value}
+                          checked={selectedSearch?.size === option.value}
+                          onChange={handleChange}
+                        />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Type Section */}
+                <div>
+                  <div className="text-lg font-medium">Type:</div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {typeOptions.map((option) => (
+                      <label key={option.value} className="flex items-center space-x-2">
+                        <input type="radio"
+                          name="type"
+                          value={option.value}
+                          checked={selectedSearch?.type === option.value}
+                          onChange={handleChange} />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Commodity Section */}
+                <div>
+                  <div className="text-lg font-medium">Commodity:</div>
+                  <select className="p-2 text-black text-lg border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 hover:border-gray-500 w-full"
+                    value={selectedSearch?.commodity}
+                    onChange={handleChange}
+                    name="commodity">
+                    <option value="" className="text-gray-500">
+                      Select an option
                     </option>
-                  ))}
-                </select>
-              </AccordionItemBody>
-            </AccordionItem>
-            <AccordionItem>
-              <AccordionItemTitle>Count</AccordionItemTitle>
-              <AccordionItemBody>
-                <input
-                  type="number"
-                  value={selectedSearch?.count || 0}
-                  onChange={handleCountChange}
-                  name="count"
-                  min="0"
-                />
-              </AccordionItemBody>
-            </AccordionItem>
-          </Accordion> */}
+                    {commodityOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Count Section */}
+                <div>
+                  <div className="text-lg font-medium">Count:</div>
+                  <div className="flex space-x-2 items-center">
+                    <input type="number"
+                      value={selectedSearch?.count}
+                      onChange={handleCountChange}
+                      min="0"
+                      className="p-2 text-lg border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 hover:border-gray-500 w-full" />
+                  </div>
+                </div>
+              </form>
+            </Accordion>
+          </div>
           <button type="submit">Save</button>
         </form>
+        <button onClick={() => setModalIsOpen(false)}>Close</button>
       </Modal>
+      {error && <p>Error: {error}</p>}
     </div>
   );
-};
+}
