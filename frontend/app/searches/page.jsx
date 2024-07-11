@@ -369,10 +369,6 @@ export default function Searches() {
       console.log('Updated search:', updatedData);
       setSelectedSearch(updatedData);         
       setModalIsOpen(false);
-
-      // setSearches(searches.map(search =>
-      //   search.id === selectedSearch.id ? selectedSearch : search
-      // ));
       fetchData();
     } catch (error) {
       console.error("Error updating search:", error);
