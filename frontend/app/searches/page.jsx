@@ -65,6 +65,17 @@ export default function Searches() {
       console.log('Updated search:', updatedData);
       setSelectedSearch(updatedData);         
       setModalIsOpen(false);
+
+      const fetchData = async () => {
+        try {
+          const response = await getSearches({ sort: 'updated_at', order: 'asc' });
+          setSearches(response);
+        } catch (error) {
+          console.error("Error fetching searches:", error);
+          setError(error.message);
+        }
+      };
+
       fetchData();
     } catch (error) {
       console.error("Error updating search:", error);
