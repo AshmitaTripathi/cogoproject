@@ -132,31 +132,38 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleOriginChange = (selectedOption) => {
-    const newOrigin = selectedOption ? selectedOption.value : '';
-    // if (newOrigin === formData.destination) {
-    //   alert('Origin and destination cannot be the same.');
-    //   setError('Origin and destination cannot be the same.');
-    // } else {
+    const newOrigin = selectedOption ? selectedOption : '';
+    if (newOrigin === formData.destination) {
+      alert('Origin and destination cannot be the same.');
+      setError('Origin and destination cannot be the same.');
+    } else {
       setError('');
       setFormData((prevFormData) => ({
         ...prevFormData,
         origin: newOrigin,
       }));
-    // }
+      console.log({
+
+      
+
+        origin: newOrigin,
+
+      })
+    }
   };
 
   const handleDestinationChange = (selectedOption) => {
     const newDestination = selectedOption ? selectedOption : '';
-    // if (newDestination === formData.origin) {
-    //   alert('Origin and destination cannot be the same.');
-    //   setError('Origin and destination cannot be the same.');
-    // } else {
+    if (newDestination === formData.origin) {
+      alert('Origin and destination cannot be the same.');
+      setError('Origin and destination cannot be the same.');
+    } else {
       setError('');
       setFormData((prevFormData) => ({
         ...prevFormData,
         destination: newDestination,
       }));  
-    // }
+    }
   };
 
   const handleSizeChange = (event) => {
@@ -269,7 +276,7 @@ export default function Home() {
     }
   };
   return (
-    <div className="flex flex-wrap items start mt-5 space-x-4">
+    <div className="flex flex-wrap items-start mt-5 space-x-4">
       <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
         <label htmlFor="origin">Origin:</label>
         <Select
@@ -285,13 +292,13 @@ export default function Home() {
         />
       </div>
       <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
-        <label htmlFor="origin">Destination:</label>
+        <label htmlFor="destination">Destination:</label>
         <Select
           id="destination"
-          value={formData.destinationestination}
+          value={formData.destination}
           onChange={handleDestinationChange}
           onSearch={handleDestinationSearch}
-          placeholder="Select destination"
+          placeholder="Select Destination"
           options={Destoptions}
           size="md"
           style={{ width: '250px' }}
@@ -300,7 +307,7 @@ export default function Home() {
       </div>
       <div className="relative" style={{padding: '16', width: 'fir-content',color: 'black'}}>
         <Accordion
-          title="Conatiner Details"
+          title="Container Details"
           className="accordion-content"
           style={{
             width: '100%',
@@ -309,7 +316,6 @@ export default function Home() {
             border: '1px solid #ccc',
             borderRadius: '8px',
             padding: '10px',
-            position: 'absolute',
           }}
         >
           <form className="space-y-4">
@@ -379,7 +385,7 @@ export default function Home() {
           </form>
         </Accordion>
       </div>
-      <div style={{padding: 16, width: 'fit-content', color: 'white' }}>
+      <div style={{padding: 16, width: 'fit-content', color: 'black' }}>
         <button
           className="p-2 text-lg border-2 border-black rounded-md bg-red-500 text-white transition duration-300 hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           onClick={handleSearch}
@@ -389,6 +395,4 @@ export default function Home() {
       </div>
         <SeeSearchesButton /> 
     </div>
-  );
-
-}
+  )};
