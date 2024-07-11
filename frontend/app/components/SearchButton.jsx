@@ -39,6 +39,7 @@ const SearchButton = ({ formData }) => {
   return (
     <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
       <button
+      style={{marginTop: '18px'}}
         className="p-2 text-lg border-2 border-black rounded-md bg-red-500 text-white transition duration-300 hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
         onClick={handleSearch}
       >
