@@ -23,9 +23,9 @@ def update_search(db: Session , id : int , search: schemas.SearchV2Update):
         raise HTTPException(status_code=404, detail="User not found")
     if db_search:
         for key, value in search.dict().items():
-         if key == "updated_at":
-                setattr(db_search, key)  # Update with current timestamp
-        else:
+            if key == "updated_at":
+            #     setattr(db_search, key, datetime.utcnow())  # Update with current timestamp
+            # else:
                 setattr(db_search, key, value)
         db.commit()
         db.refresh(db_search)
