@@ -127,22 +127,24 @@ export default function Searches() {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
 
+  const fetchData = async () => {
+    try {
+      const response = await getSearches();
+      setSearches(response);
+    } catch (error) {
+      console.error("Error fetching searches:", error);
+      setError(error.message);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getSearches();
-        setSearches(response);
-      } catch (error) {
-        console.error("Error fetching searches:", error);
-        setError(error.message);
-      }
-    };
     fetchData();
   }, []);
 
   const handleEdit = (search) => {
     setSelectedSearch(search);
     setModalIsOpen(true); 
+    console.log(selectedSearch)
   };
 
   const handleDelete = async (id) => {
@@ -308,7 +310,7 @@ export default function Searches() {
         <label htmlFor="origin">Origin:</label>
         <Select
           id="origin"
-          value={origin}
+          value={selectedSearch?.origin}
           onChange={handleOriginChange}
           onSearch={handleOriginSearch}
           placeholder="Select Origin"
@@ -322,7 +324,7 @@ export default function Searches() {
         <label htmlFor="destination">Destination:</label>
         <Select
           id="destination"
-          value={destination}
+          value={selectedSearch?.destination}
           onChange={handleDestinationChange}
           onSearch={handleDestinationSearch}
           placeholder="Select Destination"
