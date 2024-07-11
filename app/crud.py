@@ -2,6 +2,7 @@ from datetime import datetime
 from http.client import HTTPException
 from sqlalchemy.orm import Session
 from . import models, schemas
+import datetime
 
 def create_search(db: Session, search: schemas.SearchV2Create):
     db_search = models.SearchSystem(**search.dict())
@@ -24,8 +25,8 @@ def update_search(db: Session , id : int , search: schemas.SearchV2Update):
     if db_search:
         for key, value in search.dict().items():
             if key == "updated_at":
-            #     setattr(db_search, key, datetime.utcnow())  # Update with current timestamp
-            # else:
+                setattr(db_search, key, datetime.utcnow())  # Update with current timestamp
+            else:
                 setattr(db_search, key, value)
         db.commit()
         db.refresh(db_search)
