@@ -164,9 +164,11 @@ export default function Searches() {
     try {
       await updateSearch(selectedSearch.id, selectedSearch);
       setModalIsOpen(false);
-      setSearches(searches.map(search =>
-        search.id === selectedSearch.id ? selectedSearch : search
-      ));
+
+      // setSearches(searches.map(search =>
+      //   search.id === selectedSearch.id ? selectedSearch : search
+      // ));
+      fetchData();
     } catch (error) {
       console.error("Error updating search:", error);
     }

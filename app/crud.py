@@ -1,3 +1,4 @@
+from datetime import datetime
 from http.client import HTTPException
 from sqlalchemy.orm import Session
 from . import models, schemas
@@ -22,7 +23,10 @@ def update_search(db: Session , id : int , search: schemas.SearchV2Update):
         raise HTTPException(status_code=404, detail="User not found")
     if db_search:
         for key, value in search.dict().items():
-            setattr(db_search, key, value)
+         if key == "updated_at":
+                setattr(db_search, key)  # Update with current timestamp
+        else:
+                setattr(db_search, key, value)
         db.commit()
         db.refresh(db_search)
     return db_search

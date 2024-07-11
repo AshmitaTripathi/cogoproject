@@ -34,9 +34,11 @@ export const getSearch = async (id) => {
 
 export const updateSearch = async (id, updatedSearch) => {
   try {
-    const response = await axios.put(`http://localhost:8000/update_search/${id}`, updatedSearch);
-    return response.data;
-  } catch (error) {
+      await axios.put(`${API_URL}/update_search/${id}`, updatedSearch);
+      const updatedData = await getSearch(id);
+      return updatedData;
+  } 
+  catch (error) {
     throw error;
   }
 };
