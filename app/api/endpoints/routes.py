@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException , Query
 from sqlalchemy.orm import Session
 from typing import List
 import datetime
@@ -26,9 +26,14 @@ sample_searches = [
 ]
 
 @router.get("/get_searches", response_model=List[schemas.SearchV2])
-def get_searches(db: Session = Depends(get_db) , skip : int =0 , limit : int = 100):
+def get_searches(
+                db: Session = Depends(get_db), 
+                page: int = Query(1, ge=1), 
+                page_size: int = Query(5, ge=1), 
+                skip : int =0 ,
+                limit : int = 100):
     print("inside get_searches")
-    db_searches = crud.get_all_searches(db , skip , limit)
+    db_searches = crud.get_all_searches(db , page=page , page_size=page_size)
     print(db_searches)
     if not db_searches:
         raise HTTPException(status_code=404, detail="No configurations found")

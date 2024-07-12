@@ -16,9 +16,9 @@ export const fetchLocations = async (query) => {
     return response.data;
   };
 
-  export const getSearches = async () => {
+  export const getSearches = async (page=1) => {
     console.log(' inside axios api call getSearches api')
-    const response = await axios.get(`${API_URL}/get_searches`);
+    const response = await axios.get(`${API_URL}/get_searches?page=${page}`);
     return response.data;
   };
 
