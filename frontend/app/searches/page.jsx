@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Table } from '@cogoport/components';
-import { getSearches, updateSearch, deleteSearch , fetchLocations } from '../apicalls/api';
+import { getSearches, updateSearch, deleteSearch, fetchLocations } from '../apicalls/api';
 import Modal from 'react-modal';
 import { Accordion, Select } from '@cogoport/components';
 // Demo styles, see 'Styles' section below for some notes on use.
@@ -9,7 +9,7 @@ import 'react-accessible-accordion/dist/fancy-example.css';
 import OriginSelect from '../components/OriginSelect';
 import DestinationSelect from '../components/DestinationSelect';
 import ContainerDetailsAccordion from '../components/ContainerDetails';
-import  GoBackButton  from '../components/GoBackButton';
+import GoBackButton from '../components/GoBackButton';
 import Pagination from '../components/Pagination';
 import PaginationComponent from '../components/Pagination';
 
@@ -42,8 +42,12 @@ export default function Searches() {
 
   const handleEdit = (search) => {
     setSelectedSearch(search);
-    setModalIsOpen(true); 
+    setOrigOptions([{ label: search.origin, value: search.origin }]);
+    setDestOptions([{ label: search.destination, value: search.destination }]);
+    setModalIsOpen(true);
     console.log(selectedSearch)
+    console.log(Origoptions)
+    console.log(Destoptions)
   };
 
   const handleDelete = async (id) => {
@@ -59,16 +63,16 @@ export default function Searches() {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     try {
       const updatedData = await updateSearch(selectedSearch.id, selectedSearch);
       console.log('Updated search:', updatedData);
-      setSelectedSearch(updatedData);         
+      setSelectedSearch(updatedData);
       setModalIsOpen(false);
 
-      const fetchData = async () => {
+      const fetchData = async (page=1) => {
         try {
-          const response = await getSearches({ sort: 'updated_at', order: 'asc' });
+          const response = await getSearches(page);
           setSearches(response);
         } catch (error) {
           console.error("Error fetching searches:", error);
@@ -96,7 +100,7 @@ export default function Searches() {
   };
 
   const handleDestinationChange = (selectedOption) => {
-    const newDestination = selectedOption ? selectedOption: '';
+    const newDestination = selectedOption ? selectedOption : '';
     if (newDestination === selectedSearch.origin) {
       alert('Origin and destination cannot be the same.');
     } else {
@@ -200,12 +204,18 @@ export default function Searches() {
 
 
   return (
-    <div className="w-full min-h-screen bg-gray-100 flex flex-col items-center py-10" style={{width: '100%'}}>
-      <div className=" bg-white shadow-md rounded-lg p-6" style={{width: '100%'}}>
+    <div className="w-full min-h-screen bg-gray-100 flex flex-col items-center py-10" style={{ width: '100%' }}>
+      <div className=" bg-white shadow-md rounded-lg p-6" style={{ width: '100%' }}>
         <div className="mb-4">
           <GoBackButton />
         </div>
         <h1 className="text-3xl font-bold text-center mb-6">Searches</h1>
+        {/* <div style={{ padding: 16, width: 'fit-content' }}>
+            <Select value={} onChange={onChange} placeholder="Sort By-" options={options} />
+          </div>
+          <div style={{ padding: 16, width: 'fit-content' }}>
+            <Select value={value} onChange={onChange} placeholder="Ascending" options={options} />
+          </div> */}
         <div className="overflow-x-auto">
         <Table columns={columns} data={searches} className="min-w-full bg-white border-collapse border-gray-200 text-black" />
         </div>
@@ -260,11 +270,11 @@ export default function Searches() {
         </Modal>
         {error && <p className="text-red-500 mt-4">Error: {error}</p>}
         <PaginationComponent
-        currentPage={currentPage}
-        totalItems={searches.length}
-        pageSize={pageSize}
-        onPageChange={handlePageChange}
-      />
+          currentPage={currentPage}
+          totalItems={searches.length}
+          pageSize={pageSize}
+          onPageChange={handlePageChange}
+        />
       </div>
 
     </div>
