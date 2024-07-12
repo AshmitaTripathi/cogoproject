@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import Image from "next/image";
-import { Button, Accordion , Select } from '@cogoport/components';
+import { Button, Accordion, Select , Modal } from '@cogoport/components';
 import { createSearch } from './apicalls/api';
 import { fetchLocations } from './apicalls/api';
 import axios from 'axios';
@@ -27,6 +27,7 @@ export default function Home() {
   const [Origoptions, setOrigOptions] = useState([]);
   const [Destoptions, setDestOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [show, setShow] = useState(false);
 
   const handleOriginChange = (selectedOption) => {
     const newOrigin = selectedOption ? selectedOption : '';
@@ -41,7 +42,7 @@ export default function Home() {
       }));
       console.log({
 
-      
+
 
         origin: newOrigin,
 
@@ -59,7 +60,7 @@ export default function Home() {
       setFormData((prevFormData) => ({
         ...prevFormData,
         destination: newDestination,
-      }));  
+      }));
     }
   };
 
@@ -68,10 +69,10 @@ export default function Home() {
       console.log('Fetching locations for query:', query);
       setIsLoading(true);
       const data = await fetchLocations(query);
-      if('list'in data){
-      console.log(data)
-      setOrigOptions(data?.list?.map(location => ({ label: location?.name, value: location?.name })));
-    }
+      if ('list' in data) {
+        console.log(data)
+        setOrigOptions(data?.list?.map(location => ({ label: location?.name, value: location?.name })));
+      }
     } catch (error) {
       console.error('Error fetching locations:', error);
     } finally {
@@ -85,10 +86,10 @@ export default function Home() {
       console.log('Fetching locations for query:', query);
       setIsLoading(true);
       const data = await fetchLocations(query);
-      if('list'in data){
-      console.log(data)
-      setDestOptions(data?.list?.map(location => ({ label: location?.name, value: location?.name })));
-    }
+      if ('list' in data) {
+        console.log(data)
+        setDestOptions(data?.list?.map(location => ({ label: location?.name, value: location?.name })));
+      }
     } catch (error) {
       console.error('Error fetching locations:', error);
     } finally {
@@ -101,7 +102,7 @@ export default function Home() {
     if (inputValue) {
       console.log('Searching for locations:', inputValue);
       fetchOriginLocations(inputValue);
-    }else{
+    } else {
       console.log('No search query provided.')
     }
   };
@@ -109,7 +110,7 @@ export default function Home() {
     if (inputValue) {
       console.log('Searching for Destination:', inputValue);
       fetchDestinationLocations(inputValue);
-    }else{
+    } else {
       console.log('No search query provided.')
     }
   };
@@ -138,7 +139,18 @@ export default function Home() {
       <SearchButton
         formData={formData}
         setFormData={setFormData}
+        setShow={setShow}
       />
+      <Modal size="md" show={show} onClose={()=> setShow(false)} placement="top">
+        <Modal.Header title="" />
+        <Modal.Body>
+          Your Search is getting processed for Origin {formData.origin} to Destination {formData.destination}. Please wait for the results.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={()=> setShow(false)}>OK</Button>
+        </Modal.Footer>
+      </Modal>
       <SeeSearchesButton />
     </div>
-  )};
+  )
+};

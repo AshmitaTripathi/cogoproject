@@ -1,7 +1,7 @@
 import React from 'react';
 import { createSearch } from '../apicalls/api';
 
-const SearchButton = ({ formData }) => {
+const SearchButton = ({ formData , setShow }) => {
     const handleSearch = async () => {
         console.log(formData)
 
@@ -34,6 +34,8 @@ const SearchButton = ({ formData }) => {
         } catch (error) {
           console.error('Error creating search:', error);
     
+        }finally{
+          setShow(true)
         }
       };
   return (
