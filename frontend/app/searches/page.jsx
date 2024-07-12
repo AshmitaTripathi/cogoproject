@@ -26,9 +26,9 @@ export default function Searches() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 3;
 
-  const fetchData = async () => {
+  const fetchData = async (page) => {
     try {
-      const response = await getSearches();
+      const response = await getSearches(page);
       setSearches(response);
     } catch (error) {
       console.error("Error fetching searches:", error);
@@ -37,8 +37,8 @@ export default function Searches() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(currentPage);
+  }, [currentPage]);
 
   const handleEdit = (search) => {
     setSelectedSearch(search);
@@ -63,16 +63,16 @@ export default function Searches() {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     try {
       const updatedData = await updateSearch(selectedSearch.id, selectedSearch);
       console.log('Updated search:', updatedData);
       setSelectedSearch(updatedData);
       setModalIsOpen(false);
 
-      const fetchData = async () => {
+      const fetchData = async (page=1) => {
         try {
-          const response = await getSearches({ sort: 'updated_at', order: 'asc' });
+          const response = await getSearches(page);
           setSearches(response);
         } catch (error) {
           console.error("Error fetching searches:", error);
@@ -200,7 +200,7 @@ export default function Searches() {
     setCurrentPage(pageNumber);
   };
 
-  const currentData = searches.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  //const currentData = searches.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
 
   return (
@@ -217,7 +217,7 @@ export default function Searches() {
             <Select value={value} onChange={onChange} placeholder="Ascending" options={options} />
           </div> */}
         <div className="overflow-x-auto">
-          <Table columns={columns} data={currentData} className="min-w-full bg-white border-collapse border-gray-200 text-black" />
+        <Table columns={columns} data={searches} className="min-w-full bg-white border-collapse border-gray-200 text-black" />
         </div>
         <Modal
           isOpen={modalIsOpen}
