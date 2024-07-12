@@ -196,7 +196,7 @@ export default function Searches() {
     setCurrentPage(pageNumber);
   };
 
-  const currentData = searches.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  //const currentData = searches.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
 
   return (
@@ -207,7 +207,7 @@ export default function Searches() {
         </div>
         <h1 className="text-3xl font-bold text-center mb-6">Searches</h1>
         <div className="overflow-x-auto">
-        <Table columns={columns} data={currentData} className="min-w-full bg-white border-collapse border-gray-200 text-black" />
+        <Table columns={columns} data={searches} className="min-w-full bg-white border-collapse border-gray-200 text-black" />
         </div>
         <Modal
           isOpen={modalIsOpen}
