@@ -26,9 +26,9 @@ export default function Searches() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 3;
 
-  const fetchData = async () => {
+  const fetchData = async (page) => {
     try {
-      const response = await getSearches();
+      const response = await getSearches(page);
       setSearches(response);
     } catch (error) {
       console.error("Error fetching searches:", error);
@@ -37,8 +37,8 @@ export default function Searches() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(currentPage);
+  }, [currentPage]);
 
   const handleEdit = (search) => {
     setSelectedSearch(search);
