@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import Image from "next/image";
-import { Button, Accordion, Select , Modal } from '@cogoport/components';
+import { Button, Accordion, Select, Modal } from '@cogoport/components';
 import { createSearch } from './apicalls/api';
 import { fetchLocations } from './apicalls/api';
 import axios from 'axios';
@@ -11,6 +11,9 @@ import ContainerDetailsAccordion from './components/ContainerDetails';
 import SearchButton from './components/SearchButton';
 import OriginSelect from './components/OriginSelect';
 import DestinationSelect from './components/DestinationSelect';
+import { useForm } from 'react-hook-form';
+import SelectController from './components/SearchController';
+// import { DevTool } from '@hookform/devtools';
 
 export default function Home() {
   // Assuming origin and destination are state variables or props
@@ -22,6 +25,18 @@ export default function Home() {
     commodity: '',
     count: 0,
   });
+  const form = useForm({
+    // defaultValues: {
+    //   origin: '',
+    //   destination: '',
+    //   size: '',
+    //   type: '',
+    //   commodity: '',
+    //   count: 0,
+    // },
+  });
+
+  const { handleSubmit , control , watch, formState:{ errors }} = form;
 
   const [error, setError] = useState('');
   const [Origoptions, setOrigOptions] = useState([]);
@@ -41,11 +56,7 @@ export default function Home() {
         origin: newOrigin,
       }));
       console.log({
-
-
-
         origin: newOrigin,
-
       })
     }
   };
@@ -114,40 +125,124 @@ export default function Home() {
       console.log('No search query provided.')
     }
   };
+  const handleSearch = async (data,event) => {
+    // console.log(formData)
+
+    // if (
+    //   !formData.origin ||
+    //   !formData.destination ||
+    //   !formData.size ||
+    //   !formData.type ||
+    //   !formData.commodity ||
+    //   !formData.count
+    // ) {
+    //   alert('All fields are required.');
+    //   console.error('Error: All fields are required.');
+    //   return;
+    // }
+    // const payload = {
+    //   origin: formData.origin,
+    //   destination: formData.destination,
+    //   size: formData.size,
+    //   type: formData.type,
+    //   commodity: formData.commodity,
+    //   count: formData.count,
+
+    // };
+
+      const payload = {
+      origin: data.origin,
+      destination: data.destination,
+      size: data.size,
+      type: data.type,
+      commodity: data.commodity,
+      count: data.count,
+
+    };
+
+    try {
+      const result = await createSearch(payload);
+      console.log('Search created successfully:', result);
+
+    } catch (error) {
+      console.error('Error creating search:', error);
+
+    }finally{
+      setShow(true)
+    }
+  };
+
+  const onSubmit= async (val) =>{
+    console.log('Form Values are : ', { val } )
+    const payload = {
+      origin: val.origin,
+      destination: val.destination,
+      size: val.size,
+      type: val.type,
+      commodity: val.commodity,
+      count: val.count,
+
+    };
+
+    try {
+      const result = await createSearch(payload);
+      console.log('Search created successfully:', result);
+
+    } catch (error) {
+      console.error('Error creating search:', error);
+
+    }finally{
+      setShow(true)
+    }
+  };
+  console.log({errors})
+
+  console.log('This is getting displayed by watch:', watch())
   return (
     <div className="flex flex-wrap items-start mt-5 space-x-4">
-      <OriginSelect
-        value={formData.origin}
-        onChange={handleOriginChange}
-        onSearch={handleOriginSearch}
-        options={Origoptions}
-        isLoading={isLoading}
-      />
-      <DestinationSelect
-        value={formData.destination}
-        onChange={handleDestinationChange}
-        onSearch={handleDestinationSearch}
-        options={Destoptions}
-        isLoading={isLoading}
-      />
-      <ContainerDetailsAccordion
-        formData={formData}
-        setFormData={setFormData}
-        error={error}
-        setError={setError}
-      />
-      <SearchButton
-        formData={formData}
-        setFormData={setFormData}
-        setShow={setShow}
-      />
-      <Modal size="md" show={show} onClose={()=> setShow(false)} placement="top">
+      <div className="space-y-4" >
+        <OriginSelect
+          control={control}
+          // value={formData.origin}
+          // onChange={handleOriginChange}
+          onSearch={handleOriginSearch}
+          options={Origoptions}
+          isLoading={isLoading}
+        />
+        <DestinationSelect
+          control={control}
+          value={formData.destination}
+          onSearch={handleDestinationSearch}
+          options={Destoptions}
+          isLoading={isLoading}
+        />
+        <ContainerDetailsAccordion
+          control={control}
+          form={form}
+          formData={formData}
+          setFormData={setFormData}
+          error={error}
+          setError={setError}
+        />
+        <div style={{ padding: 16, width: 'fit-content', color: 'black' }}>
+        <Button onClick={handleSubmit(onSubmit)}
+          style={{marginTop: '18px'}}
+          className="p-2 text-lg border-2 border-black rounded-md bg-red-500 text-white transition duration-300 hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          size='lg'
+        >Search
+        </Button>
+        </div>
+        
+      </div>
+      {/* <DevTool  control={control} /> */}
+
+      <Modal size="md" show={show} onClose={() => setShow(false)} placement="top">
         <Modal.Header title="" />
         <Modal.Body>
           Your Search is getting processed for Origin {formData.origin} to Destination {formData.destination}. Please wait for the results.
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={()=> setShow(false)}>OK</Button>
+          <Button onClick={() => setShow(false)}>OK</Button>
         </Modal.Footer>
       </Modal>
       <SeeSearchesButton />
