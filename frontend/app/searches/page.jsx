@@ -12,6 +12,8 @@ import ContainerDetailsAccordion from '../components/ContainerDetails';
 import GoBackButton from '../components/GoBackButton';
 import Pagination from '../components/Pagination';
 import PaginationComponent from '../components/Pagination';
+import { useForm } from 'react-hook-form';
+import { DevTool } from '@hookform/devtools';
 
 export default function Searches() {
   const [searches, setSearches] = useState([]);
@@ -21,10 +23,12 @@ export default function Searches() {
   const [Origoptions, setOrigOptions] = useState([]);
   const [Destoptions, setDestOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
+  // const [origin, setOrigin] = useState('');
+  // const [destination, setDestination] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 3;
+  const form = useForm(); 
+  const { handleSubmit, control, setValue } = form;
 
   const fetchData = async (page) => {
     try {
@@ -41,6 +45,7 @@ export default function Searches() {
   }, [currentPage]);
 
   const handleEdit = (search) => {
+    console.log('Editing search:', search);
     setSelectedSearch(search);
     setOrigOptions([{ label: search.origin, value: search.origin }]);
     setDestOptions([{ label: search.destination, value: search.destination }]);
@@ -48,6 +53,13 @@ export default function Searches() {
     console.log(selectedSearch)
     console.log(Origoptions)
     console.log(Destoptions)
+
+    setValue('origin', search.origin);
+    setValue('destination', search.destination);
+    setValue('size', search.size);
+    setValue('type', search.type);
+    setValue('commodity', search.commodity);
+    setValue('count', search.count);
   };
 
   const handleDelete = async (id) => {
@@ -62,15 +74,45 @@ export default function Searches() {
     }
   };
 
-  const handleSubmit = async (event) => {
-    // event.preventDefault();
+  // const handleSubmit = async (event) => {
+  //   // event.preventDefault();
+  //   try {
+  //     const updatedData = await updateSearch(selectedSearch.id, selectedSearch);
+  //     console.log('Updated search:', updatedData);
+  //     setSelectedSearch(updatedData);
+  //     setModalIsOpen(false);
+
+  //     const fetchData = async (page=1) => {
+  //       try {
+  //         const response = await getSearches(page);
+  //         setSearches(response);
+  //       } catch (error) {
+  //         console.error("Error fetching searches:", error);
+  //         setError(error.message);
+  //       }
+  //     };
+
+  //     fetchData();
+  //   } catch (error) {
+  //     console.error("Error updating search:", error);
+  //   }
+  // };
+  const onSubmit = async (data, event) => {
+    event.preventDefault();
+    
+    const payload = {
+      ...data,
+      id: selectedSearch.id,
+      created_at: selectedSearch.created_at,
+      updated_at: selectedSearch.updated_at,
+    };
+  
     try {
-      const updatedData = await updateSearch(selectedSearch.id, selectedSearch);
+      const updatedData = await updateSearch(selectedSearch.id, payload);
       console.log('Updated search:', updatedData);
       setSelectedSearch(updatedData);
       setModalIsOpen(false);
-
-      const fetchData = async (page=1) => {
+      const fetchData = async (page = 1) => {
         try {
           const response = await getSearches(page);
           setSearches(response);
@@ -79,7 +121,7 @@ export default function Searches() {
           setError(error.message);
         }
       };
-
+  
       fetchData();
     } catch (error) {
       console.error("Error updating search:", error);
@@ -164,6 +206,8 @@ export default function Searches() {
     }
   };
 
+  console.log('This is from watch: ', form.watch());  
+
   const columns = [
     { Header: 'ID', accessor: 'id' },
     { Header: 'Origin', accessor: 'origin' },
@@ -199,6 +243,12 @@ export default function Searches() {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+  const handleModalClose = () => {
+    setModalIsOpen(false);
+    setSelectedSearch(null);
+    setOrigOptions([]);
+    setDestOptions([]);
+  };
 
   //const currentData = searches.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -227,24 +277,27 @@ export default function Searches() {
         >
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-md">
             <h2 className="text-2xl font-bold mb-4">Edit Search</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <OriginSelect
                 id="origin"
+                control={control}
                 value={selectedSearch?.origin}
-                onChange={handleOriginChange}
+                // onChange={handleOriginChange}
                 onSearch={handleOriginSearch}
                 options={Origoptions}
                 isLoading={isLoading}
               />
               <DestinationSelect
                 id="destination"
+                control={control}
                 value={selectedSearch?.destination}
-                onChange={handleDestinationChange}
+                // onChange={handleDestinationChange}
                 onSearch={handleDestinationSearch}
                 options={Destoptions}
                 isLoading={isLoading}
               />
               <ContainerDetailsAccordion
+                control={control}
                 formData={selectedSearch}
                 setFormData={setSelectedSearch}
                 error={error}
@@ -253,7 +306,7 @@ export default function Searches() {
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
-                  onClick={() => setModalIsOpen(false)}
+                  onClick={handleModalClose}
                   className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
                 >
                   Close
