@@ -44,7 +44,7 @@ def get_search(db: Session, id: int):
 
 def get_all_searches(
     db: Session, 
-    filters: dict = Query({})
+    filters: Json = Query({})
 ):
     page = filters.get('page', 1)
     page_size = filters.get('page_size', 5)

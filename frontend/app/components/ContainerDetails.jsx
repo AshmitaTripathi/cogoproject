@@ -193,7 +193,7 @@ const ContainerDetailsAccordion = ({
             }}
             options={commodityOptions}
           />
-        </div>
+        </div>  
         <div>
           <div className="text-lg font-medium">Count:</div>
             <InputController
