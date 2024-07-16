@@ -60,6 +60,7 @@ class ServiceTypeEnum(str, Enum):
 
 
 class SearchSystemBase(BaseModel):
+    id : int
     origin: str
     destination: str
     service_type: ServiceTypeEnum
@@ -73,7 +74,11 @@ class FCLBase(BaseModel):
     commodity: str
     count: Optional[int] = None
 
-class FCLCreate(FCLBase):
+class FCLCreate(BaseModel):
+    size: Optional[str]= "not given" 
+    type: Optional[str]="not given"
+    commodity: Optional[str]="not given"
+    count: Optional[int] = "not given"
     search_id: int
 
 class FCL(FCLBase):
@@ -101,8 +106,20 @@ class AIRBase(BaseModel):
     tot_weight: int
     handling: Optional[str] = None
 
-class AIRCreate(AIRBase):
+class AIRCreate(BaseModel):
+    cargo_date: Optional[datetime] = None
+    commodity: Optional[str]=None 
+    sub_commodity: Optional[str]=None 
+    type: Optional[str]=None 
+    package_type: Optional[str]=None 
+    no_of_units: Optional[int]=None 
+    tot_vol: Optional[int]=None
+    tot_weight: Optional[int]=None
+    handling: Optional[str] = None
     search_id: int
+
+    class Config:
+        orm_mode = True
 
 class AIR(AIRBase):
     id: int 
@@ -118,6 +135,7 @@ class AIRResponse(AIR):
         orm_mode = True
 
 class SearchSystemWithDetails(SearchSystemBase):
+    id : int
     fcl: Optional[List[FCL]] = []
     air: Optional[List[AIR]] = []
 

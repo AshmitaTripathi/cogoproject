@@ -44,13 +44,13 @@ class SearchSystemBase(Base):
 
 
 class FCL(Base):
-    __tablename__ = 'fcll'
+    __tablename__ = 'fclll'
 
     id = Column(Integer, primary_key=True, index=True)
     search_id = Column(Integer, ForeignKey('searchv22.id'))
-    size = Column(String, nullable=False)
-    type = Column(String, nullable=False)
-    commodity = Column(String, nullable=False)
+    size = Column(String, nullable=True)
+    type = Column(String, nullable=True)
+    commodity = Column(String, nullable=True)
     count = Column(Integer, nullable=True)
 
     search = relationship("SearchSystemBase", back_populates="fcl")

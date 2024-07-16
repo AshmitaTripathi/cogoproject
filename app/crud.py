@@ -144,9 +144,64 @@ def get_search(db: Session, id: int):
     return db.query(models.SearchSystemBase).filter(models.SearchSystemBase.id == id).first()
 
 
+# def get_all_searches(
+#     db: Session, 
+#     filters: Json = Query({})
+# ):
+#     page = filters.get('page', 1)
+#     page_size = filters.get('page_size', 5)
+#     origin = filters.get('origin', None)
+#     destination = filters.get('destination', None)
+#     service_type = filters.get('service_type', None)
+#     start_date = filters.get('start_date', None)
+#     end_date = filters.get('end_date', None)
+#     sort_by = filters.get('sort_by', 'updated_at')
+#     sort_type = filters.get('sort_type', 'desc')
+
+#     offset = (page - 1) * page_size
+#     query = db.query(models.SearchSystemBase)
+
+#     if origin:
+#         query = query.filter(models.SearchSystemBase.origin == origin)
+#     if destination:
+#         query = query.filter(models.SearchSystemBase.destination == destination)
+#     if service_type:
+#         query = query.filter(models.SearchSystemBase.service_type == service_type)
+#     if start_date:
+#         query = query.filter(models.SearchSystemBase.updated_at >= start_date)
+#     if end_date:
+#         query = query.filter(models.SearchSystemBase.updated_at <= end_date)
+
+#     if sort_by and sort_type:
+#         sort_attr = getattr(models.SearchSystemBase, sort_by)
+#         if sort_type == "desc":
+#             query = query.order_by(desc(sort_attr))
+#         else:
+#             query = query.order_by(asc(sort_attr))
+
+#     total_count = query.count()
+#     search_list = query.offset(offset).limit(page_size).all()
+
+#     search_details = []
+#     for search in search_list:
+#         details = search.__dict__
+#         if search.service_type == models.ServiceTypeEnum.FCL:
+#             fcl_entries = db.query(models.FCL).filter(models.FCL.search_id == search.id).all()
+#             details['fcl'] = fcl_entries
+#         elif search.service_type == models.ServiceTypeEnum.AIR:
+#             air_entries = db.query(models.AIR).filter(models.AIR.search_id == search.id).all()
+#             details['air'] = air_entries
+#         search_details.append(details)
+
+#     total_pages = (total_count + page_size - 1) // page_size
+
+#     return search_details , total_count
+
+
+
 def get_all_searches(
     db: Session, 
-    filters: dict
+    filters: Json = Query({})
 ):
     page = filters.get('page', 1)
     page_size = filters.get('page_size', 5)
@@ -184,18 +239,43 @@ def get_all_searches(
 
     search_details = []
     for search in search_list:
-        details = search.__dict__
+        details = {
+            'id': search.id,
+            'origin': search.origin,
+            'destination': search.destination,
+            'service_type': search.service_type,
+            'fcl': [],
+            'air': []
+        }
+        
         if search.service_type == models.ServiceTypeEnum.FCL:
             fcl_entries = db.query(models.FCL).filter(models.FCL.search_id == search.id).all()
-            details['fcl'] = fcl_entries
+            for fcl in fcl_entries:
+                details['fcl'].append({
+                    'id': fcl.id,
+                    'search_id': fcl.search_id,
+                    'size': fcl.size or '0',
+                    'type': fcl.type or 'NA',
+                    'commodity': fcl.commodity or 'NA',
+                    'count': fcl.count or 0
+                })
         elif search.service_type == models.ServiceTypeEnum.AIR:
-            air_entries = db.query(models.AIR).filter(models.AIR.search_id == search.id).all()
-            details['air'] = air_entries
+           air_entries = db.query(models.FCL).filter(models.FCL.search_id == search.id).all()
+           for fcl in air_entries:
+                details['air'].append({
+                    'id': fcl.id,
+                    'search_id': fcl.search_id,
+                    'size': fcl.size,
+                    'type': fcl.type,
+                    'commodity': fcl.commodity,
+                    'count': fcl.count
+                })
+        
         search_details.append(details)
 
     total_pages = (total_count + page_size - 1) // page_size
 
-    return search_details , total_count
+    return search_details, total_count
 
 
 

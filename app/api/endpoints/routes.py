@@ -78,9 +78,60 @@ from typing import Dict, Any
 
 router = APIRouter()
 
-@router.post("/create_search", response_model=schemas.SearchSystemBase)
+# @router.post("/create_search", response_model=schemas.SearchSystemBase)
+# def create_search(search: schemas.SearchSystemBase, db: Session = Depends(get_db)):
+#     res = crud.create_search_base(db, search)
+#     if(search.service_type =="FCL"):
+#         res1 = crud.create_fcl(db , {"search_id":res.id})
+#     else :
+#         res2 = crud.create_air(db , {"search_id":res.id})
+#     return res
+
+# @router.post("/create_search", response_model=schemas.SearchSystemWithDetails)
+# def create_search(search: schemas.SearchSystemBase, db: Session = Depends(get_db)):
+#     created_search = crud.create_search_base(db, search)
+    
+#     # Check service type and create associated FCL or AIR entries
+#     if search.service_type == schemas.ServiceTypeEnum.FCL:
+#         fcl_data = schemas.FCLCreate(**search.dict(), search_id=created_search.id)
+#         crud.create_fcl(db, fcl_data)
+#     elif search.service_type == schemas.ServiceTypeEnum.AIR:
+#         air_data = schemas.AIRCreate(**search.dict(), search_id=created_search.id)
+#         crud.create_air(db, air_data)
+    
+
+#     return created_search
+
+@router.post("/create_search", response_model=schemas.SearchSystemWithDetails)
 def create_search(search: schemas.SearchSystemBase, db: Session = Depends(get_db)):
-    return crud.create_search_base(db, search)
+    created_search = crud.create_search_base(db, search)
+    
+    details = schemas.SearchSystemWithDetails(**search.dict(), id=created_search.id)
+    
+    # if search.service_type == schemas.ServiceTypeEnum.FCL:
+    #     fcl_data = schemas.FCLCreate(**search.dict(), search_id=created_search.id)
+    #     created_fcl = crud.create_fcl(db, fcl_data)
+    #     details.fcl = [schemas.FCLResponse(**created_fcl.dict(), origin=search.origin, destination=search.destination)]
+    # elif search.service_type == schemas.ServiceTypeEnum.AIR:
+    #     air_data = schemas.AIRCreate(**search.dict(), search_id=created_search.id)
+    #     created_air = crud.create_air(db, air_data)
+    #     details.air = [schemas.AIRResponse(**created_air.dict(), origin=search.origin, destination=search.destination)]
+
+    if search.service_type == schemas.ServiceTypeEnum.FCL:
+            fcl_data = schemas.FCLCreate(**search.dict(), search_id=created_search.id)
+            created_fcl = crud.create_fcl(db, fcl_data)
+            fcl_entries = []
+            details.fcl = fcl_entries
+    elif search.service_type == schemas.ServiceTypeEnum.AIR:
+            air_data = schemas.AIRCreate(**search.dict(), search_id=created_search.id)
+            created_air = crud.create_air(db, air_data)
+            air_entries = []
+            details.air = air_entries
+    
+    return details
+
+
+
 
 @router.post("/create_fcl", response_model=schemas.FCL)
 def create_fcl(fcl: schemas.FCLCreate, db: Session = Depends(get_db)):
