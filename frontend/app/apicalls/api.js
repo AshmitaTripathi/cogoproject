@@ -16,23 +16,23 @@ export const fetchLocations = async (query) => {
     return response.data;
   };
 
-  export const getSearches = async (pageR,filters1) => {
+  export const getSearches = async (filters) => {
     console.log(' inside axios api call getSearches api')
-    console.log('Recieved Filters are:',filters1)
-    const page =pageR.page;
+    console.log('Recieved Filters in api.js are:',filters)
+    // const page =pageR.page;
     // Define dummy filter data
-    const filters = {
-      // category: 'electronics',
-      // priceRange: '100-500',
-      "page": page,
-  };
+  //   const filters = {
+  //     // category: 'electronics',
+  //     // priceRange: '100-500',
+  //     "page": page,
+  // };
 
   console.log('Calling backend for Filters:',filters) 
 
   const response = await axios.get(`${API_URL}/get_searches`, 
     {
       params: {
-        filters // Spread the filters object into the params
+        filters: JSON.stringify(filters)
       }
     }
   );

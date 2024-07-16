@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import FilterAccordion from "../components/FilterAccordion";
 import { Table, ButtonIcon } from "@cogoport/components";
-import { IcMDelete } from "@cogoport/icons-react";
+import { IcMDelete, IcMEdit } from "@cogoport/icons-react";
 import {
   getSearches,
   updateSearch,
@@ -15,7 +15,7 @@ import { Accordion, Select } from "@cogoport/components";
 import "react-accessible-accordion/dist/fancy-example.css";
 import OriginSelect from "../components/OriginSelect";
 import DestinationSelect from "../components/DestinationSelect";
-import ContainerDetailsAccordion from "../components/ContainerDetails";
+import ContainerDetailsAccordion from "../components/ContainerDetailsAccordionFCL";
 import GoBackButton from "../components/GoBackButton";
 import Pagination from "../components/Pagination";
 import PaginationComponent from "../components/Pagination";
@@ -41,9 +41,10 @@ export default function Searches() {
   // const filterform = useForm();
   // const { handleSubmit: filterSubmit, control: filterControl , watch:watchfilter} = filterform;
 
-  const fetchData = async (page = 1, filters = {}) => {
+  const fetchData = async (filters) => {
     try {
-      const response = await getSearches(page, filters);
+      console.log("Fetching searches with filters:", filters);
+      const response = await getSearches(filters);
       setSearches(response?.list || []);
       setTotalItems(response?.total_count || 0);
     } catch (error) {
@@ -51,12 +52,11 @@ export default function Searches() {
       setError(error.message);
     }
   };
-  const onfilterSubmit = async (data, event) => {
-    event.preventDefault();
+  const onfilterSubmit = async (data) => {
     console.log("given filter data is:-", data);
-    setfilterParams(data);
-    console.log(filterParams);
-    fetchData(filterParams);
+    setfilterParams((prevParams) => ({ ...prevParams, ...data, page: 1 }));
+    // console.log(filterParams);
+    // fetchData(filterParams);
   };
 
   useEffect(() => {
@@ -259,22 +259,20 @@ export default function Searches() {
       Cell: ({ row }) => (
         <div className="flex justify-center space-x-2">
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            // className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             onClick={() => handleEdit(row.original)}
           >
-            Edit
+            <ButtonIcon size="lg" icon={<IcMEdit />} themeType="primary" />
           </button>
           <button
             // className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             onClick={() => handleDelete(row.original.id)}
           >
-            <div style={{ background: "black", textAlign: "center" }}>
               <ButtonIcon
-                size="xl"
+                size="lg"
                 icon={<IcMDelete />}
-                themeType="secondary"
+                themeType="primary"
               />
-            </div>
           </button>
         </div>
       ),
@@ -282,7 +280,7 @@ export default function Searches() {
   ];
 
   const handlePageChange = (pageNumber) => {
-    console.log('setting page Number to:', pageNumber); 
+    console.log('Setting page number to:', pageNumber);
     setfilterParams((prevParams) => ({
       ...prevParams,
       page: pageNumber,

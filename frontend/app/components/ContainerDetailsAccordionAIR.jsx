@@ -66,7 +66,7 @@ const commodityOptions = [
   label: key,
 }));
 
-const ContainerDetailsAccordion = ({
+const ContainerDetailsAccordionAIR = ({
   FormData,
   control,
   setError,
@@ -104,7 +104,7 @@ const ContainerDetailsAccordion = ({
       style={{ padding: "16", width: "fir-content", color: "black" }}
     >
       <Accordion
-        title="FCL Container Details"
+        title="AIR Container Details"
         className="accordion-content"
         style={{
           fontSize: "16px",
@@ -212,4 +212,4 @@ const ContainerDetailsAccordion = ({
   );
 };
 
-export default ContainerDetailsAccordion;
+export default ContainerDetailsAccordionAIR;
