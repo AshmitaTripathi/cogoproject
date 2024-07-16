@@ -12,10 +12,11 @@ import OriginSelect from "./components/OriginSelect";
 import DestinationSelect from "./components/DestinationSelect";
 import { useForm } from "react-hook-form";
 import SelectController from "./components/SearchController";
-import OptionSelector from './components/OptionSelector';
-import ContainerDetailsAccordionFCL from './components/ContainerDetailsAccordionFCL';
-import ContainerDetailsAccordionAIR from './components/ContainerDetailsAccordionAIR';
-import ContainerDetailsAccordionFTL from './components/ContainerDetailsAccordionFTL';
+import OptionSelector from "./components/OptionSelector";
+import ContainerDetailsAccordionFCL from "./components/ContainerDetailsAccordionFCL";
+import ContainerDetailsAccordionAIR from "./components/ContainerDetailsAccordionAIR";
+import ContainerDetailsAccordionFTL from "./components/ContainerDetailsAccordionFTL";
+import FindRates from "./components/FindRates";
 // import { DevTool } from '@hookform/devtools';
 
 export default function Home() {
@@ -38,7 +39,7 @@ export default function Home() {
     //   count: 0,
     // },
   });
-  
+
   const {
     handleSubmit,
     control,
@@ -192,6 +193,8 @@ export default function Home() {
     setSelectedOption(option);
   };
 
+  const handle
+
   const onSubmit = async (val) => {
     console.log("Form Values are : ", { val });
     const payload = {
@@ -239,9 +242,8 @@ export default function Home() {
           rules={{ required: "Destination is required" }}
           isLoading={isLoading}
         />
-        {selectedOption === 'FCL' && <ContainerDetailsAccordionFCL control={control} formData={formData} />}
-        {selectedOption === 'AIR' && <ContainerDetailsAccordionAIR control={control} formData={formData} />}
-        {selectedOption === 'FTL' && <ContainerDetailsAccordionFTL control={control} formData={formData} />}
+
+        <FindRates optionSelected={selectedOption} />
         {/* <ContainerDetailsAccordion
           control={control}
           form={form}
@@ -262,7 +264,7 @@ export default function Home() {
         </div>
       </div>
       {/* <DevTool  control={control} /> */}
-      <Modal
+      {/* <Modal
         size="md"
         show={show}
         onClose={() => setShow(false)}
@@ -276,7 +278,7 @@ export default function Home() {
         <Modal.Footer>
           <Button onClick={() => setShow(false)}>OK</Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
       <SeeSearchesButton />
     </div>
   );
