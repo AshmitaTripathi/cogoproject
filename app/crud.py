@@ -260,15 +260,21 @@ def get_all_searches(
                     'count': fcl.count or 0
                 })
         elif search.service_type == models.ServiceTypeEnum.AIR:
-           air_entries = db.query(models.FCL).filter(models.FCL.search_id == search.id).all()
-           for fcl in air_entries:
+           air_entries = db.query(models.AIR).filter(models.AIR.search_id == search.id).all()
+           for air in air_entries:
                 details['air'].append({
-                    'id': fcl.id,
-                    'search_id': fcl.search_id,
-                    'size': fcl.size,
-                    'type': fcl.type,
-                    'commodity': fcl.commodity,
-                    'count': fcl.count
+                    'id': air.id,
+                    'search_id': air.search_id,
+                    'cargo_date': air.cargo_date or 'NA',
+                    'commodity': air.commodity or 'NA',
+                    'sub_commodity': air.sub_commodity or 'NA' ,
+                    'type': air.type or 'NA',
+                    'package_type': air.package_type or 'NA',
+                    'no_of_units' : air.no_of_units or 0,
+                    'tot_vol' : air.tot_vol or 0,
+                    'tot_weight' : air.tot_weight or 0,
+                    'handling' : air.handling or 'NA'
+
                 })
         
         search_details.append(details)

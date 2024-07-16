@@ -59,8 +59,16 @@ class ServiceTypeEnum(str, Enum):
     AIR = "AIR"
 
 
-class SearchSystemBase(BaseModel):
+class responseBase(BaseModel):
     id : int
+    origin: str
+    destination: str
+    service_type: ServiceTypeEnum
+
+    class Config:
+        orm_mode = True
+
+class SearchSystemBase(BaseModel):
     origin: str
     destination: str
     service_type: ServiceTypeEnum
@@ -75,14 +83,15 @@ class FCLBase(BaseModel):
     count: Optional[int] = None
 
 class FCLCreate(BaseModel):
-    size: Optional[str]= "not given" 
-    type: Optional[str]="not given"
-    commodity: Optional[str]="not given"
-    count: Optional[int] = "not given"
+    size: Optional[str]= None
+    type: Optional[str]= None
+    commodity: Optional[str]= None
+    count: Optional[int] = None
     search_id: int
 
 class FCL(FCLBase):
     id: int
+    search_id : int 
    
 
     class Config:
@@ -123,6 +132,7 @@ class AIRCreate(BaseModel):
 
 class AIR(AIRBase):
     id: int 
+    search_id :int 
 
     class Config:
         orm_mode = True

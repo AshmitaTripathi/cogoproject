@@ -57,18 +57,18 @@ class FCL(Base):
 
 
 class AIR(Base):
-    __tablename__ = 'airr'
+    __tablename__ = 'airrr'
 
     id = Column(Integer, primary_key=True, index=True)
     search_id = Column(Integer, ForeignKey('searchv22.id'))
-    cargo_date = Column(DateTime, nullable=False)
-    commodity = Column(String, nullable=False)
-    sub_commodity = Column(String, nullable=False)
-    type = Column(String, nullable=False)
-    package_type = Column(String, nullable=False)
-    no_of_units = Column(Integer, nullable=False)
-    tot_vol = Column(Integer, nullable=False)
-    tot_weight = Column(Integer, nullable=False)
+    cargo_date = Column(DateTime, nullable=True)
+    commodity = Column(String, nullable=True)
+    sub_commodity = Column(String, nullable=True)
+    type = Column(String, nullable=True)
+    package_type = Column(String, nullable=True)
+    no_of_units = Column(Integer, nullable=True)
+    tot_vol = Column(Integer, nullable=True)
+    tot_weight = Column(Integer, nullable=True)
     handling = Column(String, nullable=True)
 
     search = relationship("SearchSystemBase", back_populates="air")

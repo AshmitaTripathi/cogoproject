@@ -141,7 +141,7 @@ def create_fcl(fcl: schemas.FCLCreate, db: Session = Depends(get_db)):
 def create_air(air: schemas.AIRCreate, db: Session = Depends(get_db)):
     return crud.create_air(db, air)
 
-@router.get("/get_search/{id}", response_model=schemas.SearchSystemBase)
+@router.get("/get_search/{id}", response_model=schemas.responseBase)
 def get_search(id: int, db: Session = Depends(get_db)):
     db_search = crud.get_search(db, id)
     if not db_search:
