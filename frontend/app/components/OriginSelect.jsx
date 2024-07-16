@@ -2,7 +2,7 @@ import React from "react";
 import { Select } from "@cogoport/components";
 import SelectController from './SearchController';
 
-const OriginSelect = ({ control, value, options, isLoading, onSearch }) => {
+const OriginSelect = ({ control, value, options, isLoading, onSearch,rules }) => {
   return (
     <div style={{ padding: 16, width: "fit-content", color: "black" }}>
       <label htmlFor="origin">Origin:</label>
@@ -24,9 +24,7 @@ const OriginSelect = ({ control, value, options, isLoading, onSearch }) => {
         name="origin"
         value={value}
         control={control}
-        rules={{
-          required: "Origin is required",
-        }}
+        rules={rules}
         options={options}
         onSearch={onSearch}
       />

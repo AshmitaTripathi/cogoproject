@@ -66,7 +66,7 @@ const commodityOptions = [
   label: key,
 }));
 
-const ContainerDetailsAccordion = ({
+const ContainerDetailsAccordionFCL = ({
   FormData,
   control,
   setError,
@@ -212,4 +212,4 @@ const ContainerDetailsAccordion = ({
   );
 };
 
-export default ContainerDetailsAccordion;
+export default ContainerDetailsAccordionFCL;

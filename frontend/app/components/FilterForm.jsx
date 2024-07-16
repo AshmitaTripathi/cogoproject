@@ -6,9 +6,11 @@ import DestinationSelect from "./DestinationSelect";
 import SelectController from "./SearchController";
 import { fetchLocations } from "../apicalls/api";
 import { useState } from "react";
+import {DateRangepicker} from "@cogoport/components";
+import DateRangePickerController from "./DateRangePickerController";
 
 const sizeOptions = [
-  { label: "20ft", value: "20" },
+  { label: "20ft", value: "20" },       
   { label: "40ft", value: "40" },
   { label: "40ft HC", value: "40HC" },
   { label: "45ft HC", value: "45HC" },
@@ -82,12 +84,14 @@ const FilterForm = ({
     onSubmit,
 }) => {
 
-const { handleSubmit, control, reset, watch, setValue } = useForm();
+const { handleSubmit, control, reset, watch, setValue, formState: {errors} } = useForm();
   const [Origoptions, setOrigOptions] = useState([]);
   const [Destoptions, setDestOptions] = useState([]);
+  const [date, setDate] = useState([]);
+  const todayDate = new Date();
     console.log('This is filterform watch:', watch())
   //   console.log('Filter form watching:-',watch());
-
+    console.log({errors})
   const fetchOriginLocations = async (query) => {
     try {
       console.log("Fetching locations for query:", query);
@@ -152,10 +156,6 @@ const { handleSubmit, control, reset, watch, setValue } = useForm();
 
   return (
     <form
-      onSubmit={
-        () => 
-        handleSubmit(onSubmit)
-      }
       style={{ padding: "10px" }}
     >
       <OriginSelect
@@ -165,6 +165,7 @@ const { handleSubmit, control, reset, watch, setValue } = useForm();
         // onChange={handleOriginChange}
         onSearch={handleOriginSearch}
         options={Origoptions}
+        rules={{}}
         // isLoading={isLoading}
       />
       <DestinationSelect
@@ -174,6 +175,7 @@ const { handleSubmit, control, reset, watch, setValue } = useForm();
         // onChange={handleDestinationChange}
         onSearch={handleDestinationSearch}
         options={Destoptions}
+        rules={{}}
         // isLoading={isLoading}
       />
       <div>
@@ -220,7 +222,22 @@ const { handleSubmit, control, reset, watch, setValue } = useForm();
           options={commodityOptions}
         />
       </div>
-      <Button type="submit">Apply Filter</Button>
+      <div>
+        <label> Select date : 
+        <DateRangePickerController
+            control={control}
+            name="Date"
+            isPreviousDaysAllowed={true}
+            maxDate={todayDate}
+        />
+       	{/* <DateRangepicker name="date" onChange={setDate} value={date}  isPreviousDaysAllowed={true} maxDate={todayDate}	/> */}
+        </label>
+      </div>
+
+      <Button onClick={() => {
+        console.log('clicked');
+        handleSubmit(onSubmit)()
+        }}>Apply Filter</Button>
     </form>
   );
 };

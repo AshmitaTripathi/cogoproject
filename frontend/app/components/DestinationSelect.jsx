@@ -2,7 +2,7 @@ import React from "react";
 import { Select } from "@cogoport/components"; // Adjust import path as per your structure
 import SelectController from "./SearchController"; // Adjust import path as per your structure
 
-const DestinationSelect = ({ control, value, options, isLoading, onSearch }) => {
+const DestinationSelect = ({ control, value, options, isLoading, onSearch , rules }) => {
   return (
     <div style={{ padding: 16, width: "fit-content", color: "black" }}>
       <label htmlFor="destination">Destination:</label>
@@ -23,9 +23,7 @@ const DestinationSelect = ({ control, value, options, isLoading, onSearch }) => 
         name="destination"
         value={value}
         control={control}
-        rules={{
-          required: "destination is required",
-        }}
+        rules={rules}
         options={options}
         onSearch={onSearch}
       />
