@@ -198,6 +198,48 @@ def get_search(db: Session, id: int):
 #     return search_details , total_count
 
 
+def get_container_info(db: Session , id : int):
+        
+        
+        search = db.query(models.SearchSystemBase).filter(models.SearchSystemBase.id == id).first()
+        details = {
+            'id': search.id,
+            'origin': search.origin,
+            'destination': search.destination,
+            'service_type': search.service_type,
+            'fcl': [],
+            'air': []
+        }
+        if search.service_type == models.ServiceTypeEnum.FCL:
+            fcl_entries = db.query(models.FCL).filter(models.FCL.search_id == search.id).all()
+            for fcl in fcl_entries:
+                details['fcl'].append({
+                    'id': fcl.id,
+                    'search_id': fcl.search_id,
+                    'size': fcl.size or '0',
+                    'type': fcl.type or 'NA',
+                    'commodity': fcl.commodity or 'NA',
+                    'count': fcl.count or 0
+                })
+        elif search.service_type == models.ServiceTypeEnum.AIR:
+           air_entries = db.query(models.AIR).filter(models.AIR.search_id == search.id).all()
+           for air in air_entries:
+                details['air'].append({
+                    'id': air.id,
+                    'search_id': air.search_id,
+                    'cargo_date': air.cargo_date or 'NA',
+                    'commodity': air.commodity or 'NA',
+                    'sub_commodity': air.sub_commodity or 'NA' ,
+                    'type': air.type or 'NA',
+                    'package_type': air.package_type or 'NA',
+                    'no_of_units' : air.no_of_units or 0,
+                    'tot_vol' : air.tot_vol or 0,
+                    'tot_weight' : air.tot_weight or 0,
+                    'handling' : air.handling or 'NA'
+
+                })
+        
+        return details
 
 def get_all_searches(
     db: Session, 
