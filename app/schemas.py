@@ -149,8 +149,6 @@ class SearchSystemWithDetails(SearchSystemBase):
     fcl: Optional[List[FCL]] = []
     air: Optional[List[AIR]] = []
 
-class ContainerDetails(BaseModel):
-    list: List[SearchSystemWithDetails]
 
 class PaginatedSearchResponse(BaseModel):
     list: List[SearchSystemWithDetails]
