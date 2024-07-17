@@ -3,6 +3,7 @@ import { Accordion, Input, RadioGroup, Select } from "@cogoport/components";
 import RadioGroupController from "./RadioGroupController";
 import InputController from "./InputController";
 import SelectController from "./SearchController";
+import { useFieldArray } from "react-hook-form";
 
 const sizeOptions = [
   { label: "20ft", value: "20" },
@@ -19,6 +20,7 @@ const typeOptions = [
   { value: "iso_tank", label: "ISO Tank" },
   { value: "open_side", label: "Open Side (One Door Open)" },
 ];
+
 const commodityOptions = [
   "general",
   "hazardous",
@@ -66,43 +68,14 @@ const commodityOptions = [
   label: key,
 }));
 
-const ContainerDetailsAccordionFCL = ({
-  FormData,
-  control,
-  setError,
-}) => {
-  // const handleSizeChange = (event) => {
-  //   console.log({ event });
-  //   setFormData({ ...formData, size: event });
-  // };
+const ContainerDetailsAccordionFCL = ({ control }) => {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "container_details",
+  });
 
-  // const handleTypeChange = (event) => {
-  //   setFormData({ ...formData, type: event });
-  // };
-
-  // const handleCommodityChange = (event) => {
-  //   setFormData({ ...formData, commodity: event });
-  // };
-
-  // const handleCountChange = (event) => {
-  //   const value = event.target.value;
-  //   // Ensure count is not negative and is not empty
-  //   if (parseInt(value) < 0) {
-  //     // Handle error condition
-  //     alert("Count must be a non-negative number.");
-  //     setError("Count must be a non-negative number.");
-  //   } else {
-  //     // Clear error if valid
-  //     setError("");
-  //     setFormData({ ...formData, count: value });
-  //   }
-  // };
-  console.log(FormData)
   return (
-    <div
-      className="relative"
-      style={{ padding: "16", width: "fir-content", color: "black" }}
-    >
+    <div className="relative" style={{ padding: "16", width: "fit-content", color: "black" }}>
       <Accordion
         title="FCL Container Details"
         className="accordion-content"
@@ -117,96 +90,41 @@ const ContainerDetailsAccordionFCL = ({
           marginTop: "30px",
         }}
       >
-        {/* Size Section */}
-        <div>
-          <div className="text-lg font-medium">Size:</div>
-          <div className="flex space-x-4">
-            {/* {sizeOptions.map((option) => (
-                                    <label key={option.value} className="flex items-center space-x-2">
-                                      <input
-                                        type="radio"
-                                        name="size"
-                                        value={option.value}
-                                        checked={formData.size === option.value}
-                                        onChange={handleSizeChange}
-                                      />
-                                      <span>{option.label}</span>
-                                    </label>
-                                  ))} */}
+        {fields.map((field, index) => (
+          <div key={field.id}>
+            <div className="text-lg font-medium">Container {index + 1}</div>
             <RadioGroupController
-              name="size"
-              value={FormData?.size}
+              name={`container_details[${index}].size`}
               control={control}
-              rules={{
-                required: "size is required",
-              }}
+              rules={{ required: "Size is required" }}
               options={sizeOptions}
             />
-          </div>
-        </div>
-
-        {/* Type Section */}
-        <div>
-          <div className="text-lg font-medium">Type:</div>
-          <div className="grid grid-cols-2 gap-4">
-            {/* {typeOptions.map((option) => (
-                                <label key={option.value} className="flex items-center space-x-2">
-                                    <input type="radio"
-                                        name="type"
-                                        value={option.value}
-                                        checked={formData.type === option.value}
-                                        onChange={handleTypeChange} />
-                                    <span>{option.label}</span>
-                                </label>
-                            ))} */}
             <RadioGroupController
-              name="type"
-              value={FormData?.type}
+              name={`container_details[${index}].type`}
               control={control}
-              rules={{
-                required: "type is required",
-              }}
+              rules={{ required: "Type is required" }}
               options={typeOptions}
             />
-          </div>
-        </div>
-
-        {/* Commodity Section */}
-        <div>
-          <div className="text-lg font-medium">Commodity:</div>
-          {/* <select className="p-2 text-black text-lg border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 hover:border-gray-500 w-full"
-                            value={formData.commodity}
-                            onChange={handleCommodityChange}
-                        >
-                            {commodityOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select> */}
-          <SelectController
-            name="commodity"
-            value={FormData?.commodity}
-            control={control}
-            rules={{
-              required: "Commodity is required",
-            }}
-            options={commodityOptions}
-          />
-        </div>  
-        <div>
-          <div className="text-lg font-medium">Count:</div>
-            <InputController
-                name="count"
-                type="number"
-                value={FormData?.count}
-                control={control}
-                rules={{
-                    required: "Count is required",
-                    min: 0,
-                }}
+            <SelectController
+              name={`container_details[${index}].commodity`}
+              control={control}
+              rules={{ required: "Commodity is required" }}
+              options={commodityOptions}
             />
-        </div>
+            <InputController
+              name={`container_details[${index}].count`}
+              type="number"
+              control={control}
+              rules={{ required: "Count is required", min: 0 }}
+            />
+            <button type="button" onClick={() => remove(index)}>
+              Remove Container
+            </button>
+          </div>
+        ))}
+        <button type="button" onClick={() => append({ size: "", type: "", commodity: "", count: 0 })}>
+          Add Container
+        </button>
       </Accordion>
     </div>
   );
