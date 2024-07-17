@@ -12,10 +12,11 @@ import OriginSelect from "./components/OriginSelect";
 import DestinationSelect from "./components/DestinationSelect";
 import { useForm } from "react-hook-form";
 import SelectController from "./components/SearchController";
-import OptionSelector from './components/OptionSelector';
-import ContainerDetailsAccordionFCL from './components/ContainerDetailsAccordionFCL';
-import ContainerDetailsAccordionAIR from './components/ContainerDetailsAccordionAIR';
-import ContainerDetailsAccordionFTL from './components/ContainerDetailsAccordionFTL';
+import OptionSelector from "./components/OptionSelector";
+import ContainerDetailsAccordionFCL from "./components/ContainerDetailsAccordionFCL";
+import ContainerDetailsAccordionAIR from "./components/ContainerDetailsAccordionAIR";
+import ContainerDetailsAccordionFTL from "./components/ContainerDetailsAccordionFTL";
+import FindRates from "./components/FindRates";
 // import { DevTool } from '@hookform/devtools';
 
 export default function Home() {
@@ -38,7 +39,7 @@ export default function Home() {
     //   count: 0,
     // },
   });
-  
+
   const {
     handleSubmit,
     control,
@@ -90,11 +91,12 @@ export default function Home() {
       setIsLoading(true);
       const data = await fetchLocations(query);
       if ("list" in data) {
-        console.log(data);
+        console.log('Origin options in fetching:',data);
         setOrigOptions(
           data?.list?.map((location) => ({
-            label: location?.name,
-            value: location?.name,
+            name: location?.name,
+            displayName: location?.display_name,
+            countryCode: location?.country_code,
           }))
         );
       }
@@ -115,8 +117,9 @@ export default function Home() {
         console.log(data);
         setDestOptions(
           data?.list?.map((location) => ({
-            label: location?.name,
-            value: location?.name,
+            name: location?.name,
+            displayName: location?.display_name,
+            countryCode: location?.country_code,
           }))
         );
       }
@@ -192,34 +195,15 @@ export default function Home() {
     setSelectedOption(option);
   };
 
-  const onSubmit = async (val) => {
-    console.log("Form Values are : ", { val });
-    const payload = {
-      origin: val.origin,
-      destination: val.destination,
-      size: val.size,
-      type: val.type,
-      commodity: val.commodity,
-      count: val.count,
-    };
-
-    try {
-      const result = await createSearch(payload);
-      console.log("Search created successfully:", result);
-    } catch (error) {
-      console.error("Error creating search:", error);
-    } finally {
-      setShow(true);
-    }
-  };
   console.log({ errors });
 
   console.log("This is getting displayed by watch:", watch());
   return (
     <div className="flex flex-wrap items-start mt-5 space-x-4">
       <OptionSelector
-        selectedOption={selectedOption}
-        onOptionChange={handleOptionChange}
+        control={control}
+        // selectedOption={selectedOption}
+        // onOptionChange={handleOptionChange}
       />
       <div className="space-y-4">
         <OriginSelect
@@ -230,18 +214,35 @@ export default function Home() {
           options={Origoptions}
           rules={{ required: "Origin is required" }}
           isLoading={isLoading}
+          renderLabel={(option) => (
+            <div>
+              <span>{option.name}</span>
+              <div>{option.displayName}</div>
+              <div>{option.countryCode}</div>
+            </div>
+          )}
         />
         <DestinationSelect
           control={control}
-          value={formData.destination}
+          // value={formData.destination}
           onSearch={handleDestinationSearch}
           options={Destoptions}
           rules={{ required: "Destination is required" }}
           isLoading={isLoading}
+          renderLabel={(option) => (
+            <div>
+              <span>{option.name}</span>
+              <div>{option.displayName}</div>
+              <div>{option.countryCode}</div>
+            </div>
+          )}
+
         />
-        {selectedOption === 'FCL' && <ContainerDetailsAccordionFCL control={control} formData={formData} />}
-        {selectedOption === 'AIR' && <ContainerDetailsAccordionAIR control={control} formData={formData} />}
-        {selectedOption === 'FTL' && <ContainerDetailsAccordionFTL control={control} formData={formData} />}
+
+        <FindRates
+          control={control}
+          handleSubmit={handleSubmit}
+        />
         {/* <ContainerDetailsAccordion
           control={control}
           form={form}
@@ -250,7 +251,7 @@ export default function Home() {
           error={error}
           setError={setError}
         /> */}
-        <div style={{ padding: 16, width: "fit-content", color: "black" }}>
+        {/* <div style={{ padding: 16, width: "fit-content", color: "black" }}>
           <Button
             onClick={handleSubmit(onSubmit)}
             style={{ marginTop: "18px" }}
@@ -259,10 +260,10 @@ export default function Home() {
           >
             Search
           </Button>
-        </div>
+        </div> */}
       </div>
       {/* <DevTool  control={control} /> */}
-      <Modal
+      {/* <Modal
         size="md"
         show={show}
         onClose={() => setShow(false)}
@@ -276,7 +277,7 @@ export default function Home() {
         <Modal.Footer>
           <Button onClick={() => setShow(false)}>OK</Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
       <SeeSearchesButton />
     </div>
   );

@@ -1,17 +1,23 @@
 import React from 'react';
+import RadioGroupController from './RadioGroupController';
 
-const OptionSelector = ({ selectedOption, onOptionChange }) => {
+const stOptions = [
+  { label: "FCL", value: "FCL" },
+  { label: "AIR", value: "AIR" },
+  { label: "FHL", value: "FHL" },
+];
+const OptionSelector = ({ selectedOption, onOptionChange, control }) => {
   return (
     <div className="flex space-x-4 mb-4">
-      {['FCL', 'AIR', 'FTL'].map(option => (
-        <button
-          key={option}
-          onClick={() => onOptionChange(option)}
-          className={`p-2 rounded ${selectedOption === option ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        >
-          {option}
-        </button>
-      ))}
+   <RadioGroupController
+              name="service_type"
+              // value={FormData?.size}
+              control={control}
+              rules={{
+                required: "service type is required",
+              }}
+              options={stOptions}
+    />
     </div>
   );
 };

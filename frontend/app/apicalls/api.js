@@ -42,6 +42,7 @@ export const fetchLocations = async (query) => {
 
 export const createSearch = async (data) => {
   const response = await axios.post(`${API_URL}/create_search`, data);
+  console.log(response.data)
   return response.data;
 };
 
