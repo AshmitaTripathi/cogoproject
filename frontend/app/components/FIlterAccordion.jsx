@@ -1,7 +1,6 @@
 import { useState } from "react";
 import FilterForm from "./FilterForm";
 import {Button, Accordion} from '@cogoport/components';
-import { useState } from "react";
 
  const FilterAccordion = ({ control , onSubmit , watch , isLoading, setIsLoading,
     fetchOriginLocations, fetchDestinationLocations

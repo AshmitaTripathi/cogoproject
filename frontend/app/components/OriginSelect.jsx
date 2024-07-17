@@ -4,7 +4,7 @@ import SelectController from "./SearchController";
 
 
 const OriginSelect = ({
-  value,
+  // value,
   options,
   onChange,
   onSearch,
@@ -38,7 +38,7 @@ const OriginSelect = ({
     /> */}
       <SelectController
         name="origin"
-        value={value}
+        // value={value}
         control={control}
         rules={rules}
         options={options}

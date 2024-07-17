@@ -19,6 +19,14 @@ import ContainerDetailsAccordionFTL from "./components/ContainerDetailsAccordion
 import FindRates from "./components/FindRates";
 // import { DevTool } from '@hookform/devtools';
 
+const LocLabel= ({option})=>{
+  return <div>
+  <span>{option.label}</span>
+  <div>{option.displayName}</div>
+  <div>{option.countryCode}</div>
+</div>
+
+}
 export default function Home() {
   // Assuming origin and destination are state variables or props
   const [formData, setFormData] = useState({
@@ -38,6 +46,7 @@ export default function Home() {
     //   commodity: '',
     //   count: 0,
     // },
+
   });
 
   const {
@@ -85,20 +94,21 @@ export default function Home() {
     }
   };
 
-  const fetchOriginLocations = async (query) => {
+  const fetchLocationsOptions = async (query,onRes=()=>{}) => {
     try {
       console.log("Fetching locations for query:", query);
       setIsLoading(true);
       const data = await fetchLocations(query);
       if ("list" in data) {
         console.log('Origin options in fetching:',data);
-        setOrigOptions(
-          data?.list?.map((location) => ({
-            name: location?.name,
-            displayName: location?.display_name,
-            countryCode: location?.country_code,
-          }))
-        );
+        const options =data?.list?.map((location) => ({
+          label: location?.name,  
+          value: location?.name,
+          displayName: location?.display_name,
+          countryCode: location?.country_code,
+        }))||[]
+
+        onRes(options)
       }
     } catch (error) {
       console.error("Error fetching locations:", error);
@@ -108,33 +118,34 @@ export default function Home() {
     }
   };
 
-  const fetchDestinationLocations = async (query) => {
-    try {
-      console.log("Fetching locations for query:", query);
-      setIsLoading(true);
-      const data = await fetchLocations(query);
-      if ("list" in data) {
-        console.log(data);
-        setDestOptions(
-          data?.list?.map((location) => ({
-            name: location?.name,
-            displayName: location?.display_name,
-            countryCode: location?.country_code,
-          }))
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching locations:", error);
-    } finally {
-      console.log("Finished fetching locations.");
-      setIsLoading(false);
-    }
-  };
+  // const fetchDestinationLocations = async (query) => {
+  //   try {
+  //     console.log("Fetching locations for query:", query);
+  //     setIsLoading(true);
+  //     const data = await fetchLocations(query);
+  //     if ("list" in data) {
+  //       console.log(data);
+  //       setDestOptions(
+  //         data?.list?.map((location) => ({
+  //           label: location?.name,
+  //           value: location?.name,
+  //           displayName: location?.display_name,
+  //           countryCode: location?.country_code,
+  //         }))
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching locations:", error);
+  //   } finally {
+  //     console.log("Finished fetching locations.");
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleOriginSearch = (inputValue) => {
     if (inputValue) {
       console.log("Searching for locations:", inputValue);
-      fetchOriginLocations(inputValue);
+      fetchLocationsOptions(inputValue,setOrigOptions);
     } else {
       console.log("No search query provided.");
     }
@@ -142,7 +153,7 @@ export default function Home() {
   const handleDestinationSearch = (inputValue) => {
     if (inputValue) {
       console.log("Searching for Destination:", inputValue);
-      fetchDestinationLocations(inputValue);
+      fetchLocationsOptions(inputValue,setDestOptions);
     } else {
       console.log("No search query provided.");
     }
@@ -197,6 +208,10 @@ export default function Home() {
 
   console.log({ errors });
 
+
+
+
+
   console.log("This is getting displayed by watch:", watch());
   return (
     <div className="flex flex-wrap items-start mt-5 space-x-4">
@@ -206,38 +221,31 @@ export default function Home() {
         // onOptionChange={handleOptionChange}
       />
       <div className="space-y-4">
-        <OriginSelect
+      <div style={{ padding: 16, width: "fit-content", color: "black" }}>Origin</div>
+        <SelectController
           control={control}
+          name='origin'
           // value={formData.origin}
           // onChange={handleOriginChange}
           onSearch={handleOriginSearch}
-          options={Origoptions}
+          options={Origoptions||[]}
           rules={{ required: "Origin is required" }}
           isLoading={isLoading}
-          renderLabel={(option) => (
-            <div>
-              <span>{option.name}</span>
-              <div>{option.displayName}</div>
-              <div>{option.countryCode}</div>
-            </div>
-          )}
+          renderLabel={(option) => (<LocLabel option={option}/>)}
         />
-        <DestinationSelect
+        <div style={{ padding: 16, width: "fit-content", color: "black" }}>Destinaiton</div>
+        <SelectController
           control={control}
+          name='destination'
           // value={formData.destination}
           onSearch={handleDestinationSearch}
           options={Destoptions}
           rules={{ required: "Destination is required" }}
           isLoading={isLoading}
           renderLabel={(option) => (
-            <div>
-              <span>{option.name}</span>
-              <div>{option.displayName}</div>
-              <div>{option.countryCode}</div>
-            </div>
-          )}
+     <LocLabel option={option}/>)}/>
 
-        />
+            
 
         <FindRates
           control={control}
