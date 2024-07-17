@@ -6,11 +6,11 @@ import DestinationSelect from "./DestinationSelect";
 import SelectController from "./SearchController";
 import { fetchLocations } from "../apicalls/api";
 import { useState } from "react";
-import {DateRangepicker} from "@cogoport/components";
+import { DateRangepicker } from "@cogoport/components";
 import DateRangePickerController from "./DateRangePickerController";
 
 const sizeOptions = [
-  { label: "20ft", value: "20" },       
+  { label: "20ft", value: "20" },
   { label: "40ft", value: "40" },
   { label: "40ft HC", value: "40HC" },
   { label: "45ft HC", value: "45HC" },
@@ -72,26 +72,35 @@ const commodityOptions = [
 }));
 
 const FilterForm = ({
-//   control,
-//   handleSubmit,
-// //     handleOriginSearch,
-// //     handleDestinationSearch,
-// //   fetchDestinationLocations,
-// //   fetchOriginLocations,
-//   watch,
+  //   control,
+  //   handleSubmit,
+  // //     handleOriginSearch,
+  // //     handleDestinationSearch,
+  // //   fetchDestinationLocations,
+  // //   fetchOriginLocations,
+  //   watch,
   isLoading,
   setIsLoading,
-    onSubmit,
+  onSubmit,
+  setIsOpen,
+  isOpen,
+  settoggle,
 }) => {
-
-const { handleSubmit, control, reset, watch, setValue, formState: {errors} } = useForm();
+  const {
+    handleSubmit,
+    control,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm();
   const [Origoptions, setOrigOptions] = useState([]);
   const [Destoptions, setDestOptions] = useState([]);
   const [date, setDate] = useState([]);
   const todayDate = new Date();
-    console.log('This is filterform watch:', watch())
+  console.log("This is filterform watch:", watch());
   //   console.log('Filter form watching:-',watch());
-    console.log({errors})
+  console.log({ errors });
   const fetchOriginLocations = async (query) => {
     try {
       console.log("Fetching locations for query:", query);
@@ -153,11 +162,12 @@ const { handleSubmit, control, reset, watch, setValue, formState: {errors} } = u
       console.log("No search query provided.");
     }
   };
+  const resett = () => {
+    reset();
+  };
 
   return (
-    <form
-      style={{ padding: "10px" }}
-    >
+    <form style={{ padding: "10px" }}>
       <OriginSelect
         id="origin"
         control={control}
@@ -223,21 +233,44 @@ const { handleSubmit, control, reset, watch, setValue, formState: {errors} } = u
         />
       </div>
       <div>
-        <label> Select date : 
-        <DateRangePickerController
+        <label>
+          {" "}
+          Select date :
+          <DateRangePickerController
             control={control}
             name="Date"
             isPreviousDaysAllowed={true}
             maxDate={todayDate}
-        />
-       	{/* <DateRangepicker name="date" onChange={setDate} value={date}  isPreviousDaysAllowed={true} maxDate={todayDate}	/> */}
+          />
+          {/* <DateRangepicker name="date" onChange={setDate} value={date}  isPreviousDaysAllowed={true} maxDate={todayDate}	/> */}
         </label>
       </div>
 
-      <Button onClick={() => {
-        console.log('clicked');
-        handleSubmit(onSubmit)()
-        }}>Apply Filter</Button>
+      <Button
+        style={{ marginTop: "10px", marginBottom: "10px" }}
+        onClick={() => {
+          console.log("clicked");
+          settoggle((prev) => !prev);
+          console.log("Accordion value is :", isOpen);
+          handleSubmit(onSubmit)();
+        }}
+      >
+        Apply Filter
+      </Button>
+
+      <div
+        style={{ display: "flex", flexDirection: "row", textAlign: "right" }}
+      >
+        <Button type="button" onClick={() => settoggle((prev) => !prev)}>
+          Close
+        </Button>
+        <Button
+          style={{ position: "fixed", left: "90%", marginBottom: "10px" }}
+          onClick={resett}
+        >
+          Reset
+        </Button>
+      </div>
     </form>
   );
 };

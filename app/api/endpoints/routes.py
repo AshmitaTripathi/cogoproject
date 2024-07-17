@@ -71,7 +71,7 @@ from typing import List
 from pydantic.types import Json
 from ... import schemas, crud
 from ...database import get_db
-import requests
+# import requests
 import httpx
 from typing import Dict, Any
 

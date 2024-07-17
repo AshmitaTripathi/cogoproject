@@ -1,8 +1,24 @@
 import React from "react";
 import { Select } from "@cogoport/components";
-import SelectController from './SearchController';
+import SelectController from "./SearchController";
 
-const OriginSelect = ({ control, value, options, isLoading, onSearch,rules }) => {
+
+const OriginSelect = ({
+  value,
+  options,
+  onChange,
+  onSearch,
+  rules,
+  control,
+  renderLabel,
+}) => {
+  const customOptionRenderer = (props) => {
+    return (
+      <components.Option {...props}>
+        <LocationOptionCard data={props.data} />
+      </components.Option>
+    );
+  };
   return (
     <div style={{ padding: 16, width: "fit-content", color: "black" }}>
       <label htmlFor="origin">Origin:</label>
@@ -27,6 +43,7 @@ const OriginSelect = ({ control, value, options, isLoading, onSearch,rules }) =>
         rules={rules}
         options={options}
         onSearch={onSearch}
+        renderLabel={renderLabel}
       />
     </div>
   );

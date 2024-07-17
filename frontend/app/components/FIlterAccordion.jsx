@@ -1,5 +1,7 @@
+import { useState } from "react";
 import FilterForm from "./FilterForm";
 import {Button, Accordion} from '@cogoport/components';
+import { useState } from "react";
 
  const FilterAccordion = ({ control , onSubmit , watch , isLoading, setIsLoading,
     fetchOriginLocations, fetchDestinationLocations
@@ -15,12 +17,16 @@ import {Button, Accordion} from '@cogoport/components';
     // const handleClickForm = () => {
 
     // };
+    const [isOpen, setIsOpen] = useState(false);
+  
   
     console.log({watch})
     return (
       <Accordion
         title="Filter By"
         className="accordion-content"
+        isOpen={isOpen}
+        onToggle={() => setIsOpen(!isOpen)}
         style={{
           fontSize: "16px",
           width: "100%",
@@ -55,7 +61,8 @@ import {Button, Accordion} from '@cogoport/components';
             // fetchOriginLocations={fetchOriginLocations}
             // fetchDestinationLocations={fetchDestinationLocations}
             onSubmit={onSubmit}
-        
+            setToggle={setIsOpen}
+           
         />
  </Accordion>
     );
