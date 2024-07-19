@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Accordion, Input, RadioGroup, Select } from "@cogoport/components";
 import RadioGroupController from "./RadioGroupController";
 import InputController from "./InputController";
 import SelectController from "./SearchController";
 import { useFieldArray } from "react-hook-form";
+import { ContainerCollapseCard } from "./ContainerCollapseCard";
 
 const sizeOptions = [
   { label: "20ft", value: "20" },
@@ -73,9 +74,22 @@ const ContainerDetailsAccordionFCL = ({ control }) => {
     control,
     name: "container_details",
   });
+  const [expandedContainer, setExpandedContainer] = useState(null);
+  const [collapsedContainers, setCollapsedContainers] = useState([]);
+
+  const handleAddContainer = () => {
+    const currentValues = { size: "20ft", type: "standard", commodity: "general", count: 18 };
+    append(currentValues);
+    setExpandedContainer(fields.length);
+  };
+
+  const handleCollapseContainer = (index) => {
+    setCollapsedContainers((prev) => [...prev, index]);
+    setExpandedContainer(null);
+  };
 
   return (
-    <div className="relative" style={{ padding: "16", width: "fit-content", color: "black" }}>
+    <div className="relative" style={{ padding: "16px", width: "fit-content", color: "black" }}>
       <Accordion
         title="FCL Container Details"
         className="accordion-content"
@@ -92,37 +106,58 @@ const ContainerDetailsAccordionFCL = ({ control }) => {
       >
         {fields.map((field, index) => (
           <div key={field.id}>
-            <div className="text-lg font-medium">Container {index + 1}</div>
-            <RadioGroupController
-              name={`container_details[${index}].size`}
-              control={control}
-              rules={{ required: "Size is required" }}
-              options={sizeOptions}
-            />
-            <RadioGroupController
-              name={`container_details[${index}].type`}
-              control={control}
-              rules={{ required: "Type is required" }}
-              options={typeOptions}
-            />
-            <SelectController
-              name={`container_details[${index}].commodity`}
-              control={control}
-              rules={{ required: "Commodity is required" }}
-              options={commodityOptions}
-            />
-            <InputController
-              name={`container_details[${index}].count`}
-              type="number"
-              control={control}
-              rules={{ required: "Count is required", min: 0 }}
-            />
-            <button type="button" onClick={() => remove(index)}>
-              Remove Container
-            </button>
+            <div
+              className="text-lg font-medium"
+              onClick={() => setExpandedContainer(index)}
+              style={{ cursor: "pointer" }}
+            >
+              Container {index + 1}
+            </div>
+            {expandedContainer === index ? (
+              <>
+                <RadioGroupController
+                  name={`container_details[${index}].size`}
+                  control={control}
+                  rules={{ required: "Size is required" }}
+                  options={sizeOptions}
+                />
+                <RadioGroupController
+                  name={`container_details[${index}].type`}
+                  control={control}
+                  rules={{ required: "Type is required" }}
+                  options={typeOptions}
+                />
+                <SelectController
+                  name={`container_details[${index}].commodity`}
+                  control={control}
+                  rules={{ required: "Commodity is required" }}
+                  options={commodityOptions}
+                />
+                <InputController
+                  name={`container_details[${index}].count`}
+                  type="number"
+                  control={control}
+                  rules={{ required: "Count is required", min: 0 }}
+                />
+                <button type="button" onClick={() => remove(index)}>
+                  Remove Container
+                </button>
+                <button type="button" onClick={() => handleCollapseContainer(index)}>
+                  Collapse Container
+                </button>
+              </>
+            ) : (
+              collapsedContainers.includes(index) && (
+                <ContainerCollapseCard
+                  index={index + 1}
+                  data={field}
+                  onDelete={() => remove(index)}
+                />
+              )
+            )}
           </div>
         ))}
-        <button type="button" onClick={() => append({ size: "", type: "", commodity: "", count: 0 })}>
+        <button type="button" onClick={handleAddContainer}>
           Add Container
         </button>
       </Accordion>

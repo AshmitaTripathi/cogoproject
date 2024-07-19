@@ -33,7 +33,8 @@ export const fetchLocations = async (query) => {
     {
       params: {
         filters: JSON.stringify(filters)
-      }
+      },
+
     }
   );
   console.log('Recieved data from backend:',response.data)

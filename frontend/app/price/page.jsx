@@ -10,6 +10,7 @@ import { getSearch } from "../apicalls/api";
 import { useForm, useFieldArray } from "react-hook-form";
 
 const Price = ({ searchParams }) => {
+  const router = useRouter();
   const { id } = searchParams;
   const { control, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
@@ -27,6 +28,7 @@ const Price = ({ searchParams }) => {
       if (id) {
         try {
           const response = await getSearch(id);
+          if(response)
           setValue("origin", response.origin);
           setValue("destination", response.destination);
           setValue("service_type", response.service_type);
@@ -35,6 +37,7 @@ const Price = ({ searchParams }) => {
         } catch (error) {
           console.error("Error fetching data:", error);
           setIsLoading(false);
+          router.push('/');
         }
       }
     };

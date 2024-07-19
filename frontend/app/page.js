@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Image from "next/image";
 import { Button, Accordion, Select, Modal } from "@cogoport/components";
 import { createSearch } from "./apicalls/api";
@@ -17,16 +17,34 @@ import ContainerDetailsAccordionFCL from "./components/ContainerDetailsAccordion
 import ContainerDetailsAccordionAIR from "./components/ContainerDetailsAccordionAIR";
 import ContainerDetailsAccordionFTL from "./components/ContainerDetailsAccordionFTL";
 import FindRates from "./components/FindRates";
+import Highlighter from "react-highlight-words";
 // import { DevTool } from '@hookform/devtools';
 
-const LocLabel= ({option})=>{
-  return <div>
-  <span>{option.label}</span>
-  <div>{option.displayName}</div>
-  <div>{option.countryCode}</div>
-</div>
+const LocLabel = ({ option, query }) => {
+  return (
+    <div>
+      <Highlighter
+        highlightClassName="highlight-text"
+        searchWords={[query]}
+        autoEscape={true}
+        textToHighlight={option.label}
+      />
+      <Highlighter
+        highlightClassName="highlight-text"
+        searchWords={[query]}
+        autoEscape={true}
+        textToHighlight={option.displayName}
+      />
+      <Highlighter
+        highlightClassName="highlight-text"
+        searchWords={[query]}
+        autoEscape={true}
+        textToHighlight={option.countryCode}
+      />
+    </div>
+  );
+};
 
-}
 export default function Home() {
   // Assuming origin and destination are state variables or props
   const [formData, setFormData] = useState({
@@ -62,6 +80,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedOption, setSelectedOption] = useState("FCL");
   const [show, setShow] = useState(false);
+  const [inputQuery , setInputQuery] = useState('')
 
   const handleOriginChange = (selectedOption) => {
     const newOrigin = selectedOption ? selectedOption : "";
@@ -144,6 +163,7 @@ export default function Home() {
 
   const handleOriginSearch = (inputValue) => {
     if (inputValue) {
+      setInputQuery(inputValue)
       console.log("Searching for locations:", inputValue);
       fetchLocationsOptions(inputValue,setOrigOptions);
     } else {
@@ -231,7 +251,7 @@ export default function Home() {
           options={Origoptions||[]}
           rules={{ required: "Origin is required" }}
           isLoading={isLoading}
-          renderLabel={(option) => (<LocLabel option={option}/>)}
+          renderLabel={(option) => (<LocLabel option={option} query={inputQuery}/>)}
         />
         <div style={{ padding: 16, width: "fit-content", color: "black" }}>Destinaiton</div>
         <SelectController
@@ -243,7 +263,7 @@ export default function Home() {
           rules={{ required: "Destination is required" }}
           isLoading={isLoading}
           renderLabel={(option) => (
-     <LocLabel option={option}/>)}/>
+     <LocLabel option={option} query={inputQuery}/>)}/>
 
             
 
